@@ -48,6 +48,16 @@ class PokerRules:
             self.pair: 2
         }
 
+# Punti delle Mani nel Texas Hold'em Poker:
+#    - Scala Colore (Straight Flush): 9 punti
+#    - Poker (Four of a Kind): 8 punti
+#    - Full (Full House): 7 punti
+#    - Colore (Flush): 6 punti
+#    - Scala (Straight): 5 punti
+#    - Tris (Three of a Kind): 4 punti
+#    - Doppia Coppia (Two Pairs): 3 punti
+#    - Coppia (Pair): 2 punti
+
     def pair(self, hand):
 
         """Controlla se una mano ha una coppia"""
