@@ -1,6 +1,10 @@
+import sys
 from flask import Flask, render_template, request
-from deck import Deck
-from poker_rules import PokerRules
+
+sys.path.append("python_files")
+
+from python_files.deck import Deck
+from python_files.poker_rules import PokerRules
 
 class Card:
     def __init__(self, seed: str, value: str):
