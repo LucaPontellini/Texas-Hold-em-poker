@@ -2,13 +2,13 @@
 Welcome to the Texas Hold'em Poker project! This repository contains the code for a Texas Hold'em poker game, designed to provide an engaging and authentic poker experience. ♠️♥️♣️♦️
 
 ## Features 🃏
-Game Setup: Each player receives two hole cards, and five community cards are dealt on the table.
+- Game Setup: Each player receives two hole cards, and five community cards are dealt on the table.
 
-Hand Evaluation: Players combine their cards with the community cards to form the best possible hand.
+- Hand Evaluation: Players combine their cards with the community cards to form the best possible hand.
 
-Betting Rounds: Includes all the betting rounds - pre-flop, flop, turn, and river.
+- Betting Rounds: Includes all the betting rounds - pre-flop, flop, turn, and river.
 
-Winning Calculation: Automatically determines the winning hand at the end of each round.
+- Winning Calculation: Automatically determines the winning hand at the end of each round.
 
 ## Future Integration 🌟
 This repository specializes in the Texas Hold'em game and will be integrated with Ponte's Casino in the future, enhancing the overall casino experience.
