@@ -8,14 +8,14 @@
     </head>
     <body>
         <div class="opponent-hand">
-            {% for i in range(enemy_cards_count) %}
-                <img src="/static/card_images/card_back.png" alt="">
+            {% for i in range(enemy_cards_count) %} //qui c'è il problema
+                <img src="/static/card_images/card_back.jpg" alt="">
             {% endfor %}
             <p>L'avversario ha {{ enemy_cards_count }} carte</p>
         </div>
         <div class="deck">
             <form method="GET" action="/">
-                <img src="/static/card_images/card_back.png" alt="">
+                <img src="/static/card_images/card_back.jpg" alt="">
                 <input type="hidden" name="action" value="draw" />
                 <input type="submit" value="Pesca dal mazzo" {% if not can_draw %} disabled {% endif %}/>
             </form>
@@ -44,7 +44,7 @@
                         style="background-image: url('/static/card_images/{{ card.seed }}/{{ card.value }}.png')" 
                         {% if not can_play %} disabled {% endif %}>
                 {% endfor %}
-                <input type="hidden" name="action" value="play" />
+                <input type="hidden" name="action" value="play"/>
             </form>
         </div>
     </body>

@@ -95,7 +95,7 @@ game = Game()
 def index():
     winner = game.get_winner()
     if winner:
-        return render_template("game.html", winner=winner, game=game)
+        return render_template("game.html", winner=winner, game=game) #qui c'è il poblema
 
     if game.can_execute_turn("player"):
         if request.method == "POST":

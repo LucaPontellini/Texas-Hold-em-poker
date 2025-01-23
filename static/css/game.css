@@ -1,15 +1,9 @@
 body {
-    height: 100dvh;
+    height: 100vh;
     background-image: url('static/texas_hold_em_table.jpg');
     background-size: cover;
-}
-
-div:first-child {
-    text-align: center;
-}
-
-div:last-child {
-    text-align: center;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .opponent-hand {
