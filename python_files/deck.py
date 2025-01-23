@@ -1,25 +1,20 @@
 import json
 import os
+import random
 
 class Deck:
     def __init__(self, deck_file_path):
-        self.deck_file_path = deck_file_path
-        self.deck_data = self.load_deck_data()
+        self.deck_data = self.load_deck(deck_file_path)
 
-    def load_deck_data(self):
+    def load_deck(self, deck_file_path):
 
-        """Carica i dati del mazzo di carte dal file JSON."""
-
-        if os.path.exists(self.deck_file_path):
-            try:
-                with open(self.deck_file_path, 'r') as f:
-                    return json.load(f)
-            except Exception as e:
-                print(f"Error reading file: {e}")
-                return self.create_default_deck_data()
-        else:
-            return self.create_default_deck_data()
-
+        """Carica il mazzo di carte da un file JSON."""
+        
+        with open(deck_file_path, 'r') as file:
+            deck = json.load(file)
+        random.shuffle(deck)
+        return deck
+    
     def save_deck_data(self):
 
         """Salva i dati del mazzo di carte in un file JSON."""

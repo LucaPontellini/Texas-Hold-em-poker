@@ -1,5 +1,5 @@
 import random
-from deck import Deck
+from .deck import Deck
 
 # Regole del Texas Hold'em Poker:
 
@@ -118,7 +118,8 @@ class PokerRules:
     def distribute_cards(self, deck):
 
         """Distribuisce due carte coperte a ciascun giocatore"""
-
+        if len(deck) < 4:
+            raise ValueError("Il mazzo non ha abbastanza carte per distribuire.")
         player_hand = [deck.pop(), deck.pop()]
         dealer_hand = [deck.pop(), deck.pop()]
         return player_hand, dealer_hand
@@ -161,19 +162,22 @@ class PokerRules:
     def flop(self, deck):
 
         """Distribuisce il flop"""
-
+        if len(deck) < 3:
+            raise ValueError("Il mazzo non ha abbastanza carte per distribuire il flop.")
         return [deck.pop(), deck.pop(), deck.pop()]
 
     def turn(self, deck):
 
         """Distribuisce la carta del turn"""
-
+        if len(deck) < 1:
+            raise ValueError("Il mazzo non ha abbastanza carte per distribuire il turn.")
         return deck.pop()
 
     def river(self, deck):
 
         """Distribuisce la carta del river"""
-
+        if len(deck) < 1:
+            raise ValueError("Il mazzo non ha abbastanza carte per distribuire il river.")
         return deck.pop()
 
     def show_cards(self, player_hand, dealer_hand):

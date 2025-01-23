@@ -1,8 +1,4 @@
-import sys
 from flask import Flask, render_template, request
-
-sys.path.append("python_files")
-
 from python_files.deck import Deck
 from python_files.poker_rules import PokerRules
 
@@ -33,7 +29,7 @@ class Player:
 
 class Game:
     def __init__(self):
-        self.deck = Deck().deck_data
+        self.deck = Deck('python_files/deck.json').deck_data
         self.player = Player("player")
         self.opponent = Player("opponent")
         self.community_cards = []
@@ -96,7 +92,7 @@ app = Flask(__name__, static_url_path="")
 game = Game()
 
 @app.route("/", methods=["GET", "POST"])
-def game():
+def index():
     winner = game.get_winner()
     if winner:
         return render_template("game.html", winner=winner, game=game)
