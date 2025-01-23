@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/static/css/home_poker.css">
+</head>
+<body class="poker-background">
+
+<div class="header">
+  <h1>Welcome to Texas Hold'em Poker!</h1>
+  <div class="button-container">
+    <button class="button" onclick="window.location.href='/play'">Play Now</button>
+    <button class="button" onclick="window.location.href='/poker_rules'">Back to Poker Rules</button>
+  </div>
+</div>
+
+<div id="error-message" class="error-message" style="display: none;">
+  <p id="error-text"></p>
+</div>
+
+<script>
+  function showErrorMessage(message, redirectUrl) {
+    document.getElementById('error-text').innerHTML = message;
+    document.getElementById('error-message').style.display = 'block';
+    setTimeout(function() {
+      hideErrorMessage();
+      window.location.href = redirectUrl;
+    }, 5000); // Nasconde il messaggio dopo 5 secondi e reindirizza
+  }
+
+  function hideErrorMessage() {
+    document.getElementById('error-message').style.display = 'none';
+  }
+
+  // Mostra il messaggio di errore se presente
+  {% if error_message %}
+  showErrorMessage("{{ error_message }}", "{{ redirect_url }}");
+  {% endif %}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <body style="background-image: url('{{ url_for('static', filename='static/tavolo_poker_con_mano.png') }}'); background-size: cover;"></body>
+    <div style="position: relative; top: 50px; left: 100px;">
+        {% for card in user_cards %}
+        
+            <img src="{{ url_for('static', filename=card) }}" alt="Card" style="position: absolute; top: {{ loop.index0 * 30 }}px; max-width: 50px;">
+        {% endfor %}
+    </div>
+    <div style="position: relative; top: 150px; left: 100px;">
+        {% for card in dealer_cards %}
+            <img src="{{ url_for('static', filename=card) }}" alt="Card" style="position: absolute; top: {{ loop.index0 * 30 }}px; max-width: 50px;">
+        {% endfor %}
+    </div>
+    <div style="position: relative; top: 250px; left: 100px;">
+        {% for card in community_cards %}
+            <img src="{{ url_for('static', filename=card) }}" alt="Card" style="position: absolute; top: {{ loop.index0 * 30 }}px; max-width: 50px;">
+        {% endfor %}
+    </div>
+</html>
