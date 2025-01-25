@@ -2,8 +2,8 @@ import json
 import random
 
 class Card:
-    def __init__(self, suit: str, value: str):
-        self.suit = suit
+    def __init__(self, seed: str, value: str):
+        self.suit = seed
         self.value = value
 
     def __repr__(self):
@@ -20,4 +20,4 @@ class Deck:
         with open(deck_file_path, 'r') as file:
             deck = json.load(file)
         random.shuffle(deck)
-        return deck
+        return [Card(card['seed'], card['value']) for card in deck]

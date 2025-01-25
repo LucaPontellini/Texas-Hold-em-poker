@@ -55,34 +55,39 @@ class PokerRules:
 #    - Doppia Coppia (Two Pairs): 3 punti
 #    - Coppia (Pair): 2 punti
 
+    def distribute_cards(self, deck):
+        player_cards = deck[:2]
+        opponent_cards = deck[2:4]
+        return player_cards, opponent_cards
+
     def pair(self, hand):
-        values = [card['value'] for card in hand]
+        values = [card.value for card in hand]
         return any(values.count(value) == 2 for value in values)
 
     def two_pairs(self, hand):
-        values = [card['value'] for card in hand]
+        values = [card.value for card in hand]
         pairs = [value for value in values if values.count(value) == 2]
         return len(set(pairs)) == 2
 
     def three_of_a_kind(self, hand):
-        values = [card['value'] for card in hand]
+        values = [card.value for card in hand]
         return any(values.count(value) == 3 for value in values)
 
     def straight(self, hand):
         card_values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-        values = sorted(card_values.index(card['value']) for card in hand)
+        values = sorted(card_values.index(card.value) for card in hand)
         return all(values[i] - values[i-1] == 1 for i in range(1, len(values))) or \
                (values[-1] == 12 and all(values[i] - values[i-1] == 1 for i in range(1, len(values)-1)))
 
     def flush(self, hand):
-        suits = [card['suit'] for card in hand]
+        suits = [card.suit for card in hand]
         return len(set(suits)) == 1
 
     def full_house(self, hand):
         return self.three_of_a_kind(hand) and self.pair(hand)
 
     def four_of_a_kind(self, hand):
-        values = [card['value'] for card in hand]
+        values = [card.value for card in hand]
         return any(values.count(value) == 4 for value in values)
 
     def straight_flush(self, hand):

@@ -1,78 +1,29 @@
 body {
-    height: 100vh;
-    background-image: url('static/texas_hold_em_table.jpg');
+    font-family: Arial, sans-serif;
+    background-image: url("/static/texas_hold_em_table.jpg");
     background-size: cover;
-    background-position: center;
     background-repeat: no-repeat;
+    color: white;
+    text-align: center;
 }
-
-.opponent-hand {
-    font-size: larger;
-    font-weight: bold;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: center;
+.card {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px;
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #000000;
+    border-radius: 5px;
 }
-
-.opponent-hand > img,
-.deck > form > img {
-    flex: 0 0 80px;
-    width: 80px;
-    object-fit: scale-down;
+.button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
-
-.opponent-hand > p {
-    flex: 1 1 9999px;
-}
-
-.deck > form {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.deck > form > input {
-    flex: 0 0;
-    width: 160px;
-}
-
-.played-card {
-    width: 150px;
-    height: 200px;
-    margin-inline: auto;
-}
-
-.played-card > img {
-    width: 150px;
-    height: 200px;
-    object-fit: scale-down;
-}
-
-.player-actions {
-    justify-content: end;
-    display: flex;
-    gap: 4px;
-}
-
-.player-hand {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: center;
-    margin-top: 16px;
-}
-
-.player-hand > input {
-    width: 120px;
-    height: 180px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    color: transparent;
-}
-
-.player-hand > input:disabled {
-    opacity: 0.2;
+.button:hover {
+    background-color: #0056b3;
 }
