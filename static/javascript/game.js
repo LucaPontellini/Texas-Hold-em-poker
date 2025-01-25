@@ -49,6 +49,28 @@ window.onload = function() {
     });
 };
 
+function startGame() {
+    fetch('/start-game', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Aggiorna l'interfaccia utente con i dati ricevuti
+        displayHand(data.player_hand, 'player-hand');
+        displayHand(data.dealer_hand, 'dealer-hand', true); // Il dealer vede le sue carte coperte
+        displayHand(data.community_cards, 'community-cards');
+        displayDeck(data.deck_card, 'deck');
+        document.getElementById('winner').textContent = data.winner || '';
+    })
+    .catch(error => {
+        console.error('Errore:', error);
+        alert('Si è verificato un errore durante l'inizio del gioco. Riprova.');
+    });
+}
+
 function executeAction(action) {
     fetch('/', {
         method: 'POST',
@@ -78,11 +100,6 @@ function displayDeck(deckCard, elementId) {
     const deckElement = document.getElementById(elementId);
     deckElement.innerHTML = ''; // Pulisce il mazzo precedente
     deckElement.appendChild(createCardElement(deckCard, true)); // Le carte del mazzo sono coperte
-}
-
-function startGame() {
-    // Aggiungi la logica per iniziare il gioco
-    console.log("Inizia il gioco");
 }
 
 function placeBet() {

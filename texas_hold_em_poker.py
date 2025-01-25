@@ -34,5 +34,21 @@ def index():
             'winner': winner
         })
 
+@app.route("/start-game", methods=["POST"])
+def start_game():
+    game.setup_players()  # Inizializza le carte dei giocatori e del mazzo
+    player_hand = [{'value': card.value, 'suit': card.suit} for card in game.player.cards]
+    dealer_hand = [{'value': card.value, 'suit': card.suit} for card in game.opponent.cards]
+    community_cards = [{'value': card.value, 'suit': card.suit} for card in game.community_cards]
+    deck_card = {'value': 'back', 'suit': 'card_back'}
+
+    return jsonify({
+        'player_hand': player_hand,
+        'dealer_hand': dealer_hand,
+        'community_cards': community_cards,
+        'deck_card': deck_card,
+        'winner': None
+    })
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
