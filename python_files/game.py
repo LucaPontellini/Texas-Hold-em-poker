@@ -4,61 +4,41 @@ from poker_rules import PokerRules
 
 class Game:
     def __init__(self):
-        self.deck = Deck('python_files/deck.json').deck_data
+        self.deck = Deck('deck.json').deck_data
         self.player = Player("player")
         self.opponent = Player("opponent")
         self.community_cards = []
         self.turn_count = 0
-        self.last_player_name = None
-        self.last_played_card_turn = 0
+        self.phase = 'pre-flop'
         self.poker_rules = PokerRules()
         self.setup_players()
 
     def setup_players(self):
-        self.player.cards, self.opponent.cards = self.poker_rules.distribute_cards(self.deck)
+        self.player.cards, self.opponent.cards = self.deck[:2], self.deck[2:4]
+        self.deck = self.deck[4:]
 
-    def get_last_played_card(self) -> Card | None:
-        return self.community_cards[-1] if self.community_cards else None
+    def next_phase(self):
+        if self.phase == 'pre-flop':
+            self.phase = 'flop'
+            self.community_cards = self.deck[:3]
+            self.deck = self.deck[3:]
+        elif self.phase == 'flop':
+            self.phase = 'turn'
+            self.community_cards.append(self.deck.pop(0))
+        elif self.phase == 'turn':
+            self.phase = 'river'
+            self.community_cards.append(self.deck.pop(0))
+        elif self.phase == 'river':
+            self.phase = 'showdown'
 
-    def can_execute_turn(self, player_name: str) -> bool:
-        if self.last_player_name == player_name or self.last_player_name is None or self.last_played_card_turn < self.turn_count - 1:
-            return True
-        return False
+    def execute_player_turn(self, action):
+        if action == 'check' or action == 'call' or action == 'bet' or action == 'raise':
+            self.next_phase()
+        elif action == 'fold':
+            return 'opponent wins'
 
-    def can_card_be_played(self, card: Card) -> bool:
-        top_card = self.get_last_played_card()
-        if top_card is None:
-            return False
-        return card.suit == top_card.suit or card.value == top_card.value
-
-    def execute_player_turn(self, action: str, played_card: Card | None = None) -> bool:
-        if action == "draw":
-            self.player.add_card(self.deck.pop())
-            return True
-        elif action == "pass":
-            return True
-        elif action == "play" and isinstance(played_card, Card) and self.player.has_card(played_card) and self.can_card_be_played(played_card):
-            self.community_cards.append(played_card)
-            self.player.remove_card(played_card)
-            self.last_played_card_turn = self.turn_count
-            return True
-        return False
-
-    def execute_opponent_turn(self):
-        for card in self.opponent.cards:
-            if self.can_card_be_played(card):
-                self.community_cards.append(card)
-                self.opponent.remove_card(card)
-                self.last_played_card_turn = self.turn_count
-                return
-        self.opponent.add_card(self.deck.pop())
-
-    def get_winner(self) -> str:
+    def get_winner(self):
         player_hand = self.player.cards + self.community_cards
         opponent_hand = self.opponent.cards + self.community_cards
         player_ranking = self.poker_rules.determine_winner(player_hand, opponent_hand)
-        if player_ranking == "Player wins!":
-            return "player"
-        elif player_ranking == "Dealer wins!":
-            return "opponent"
-        return ""
+        return player_ranking
