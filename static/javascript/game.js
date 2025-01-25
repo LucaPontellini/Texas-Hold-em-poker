@@ -1,4 +1,3 @@
-/* game.js */
 function createCardElement(card, isFaceDown=false) {
     const cardElement = document.createElement('div');
     cardElement.classList.add('card');
@@ -21,7 +20,7 @@ function createCardElement(card, isFaceDown=false) {
     const value = isFaceDown ? 'back' : valueMap[card.value];
     const suit = card.suit.toLowerCase();
     const img = document.createElement('img');
-    img.src = `/static/card_images_cropped/${isFaceDown ? 'card_back.jpg' : `${suit}/${value}_${suit}.png`}`;
+    img.src = `/static/card_images/${isFaceDown ? 'card_back.jpg' : `${suit}/${value}_${suit}.png`}`;
     img.alt = isFaceDown ? 'Card Back' : `${card.value} of ${card.suit}`;
     cardElement.appendChild(img);
     return cardElement;

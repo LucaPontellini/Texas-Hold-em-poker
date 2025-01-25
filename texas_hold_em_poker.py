@@ -5,13 +5,6 @@ from flask import Flask, render_template, request, jsonify
 from game import Game
 from deck import Card
 
-import photo_management
-
-# Ritaglia le immagini delle carte all'avvio del programma principale
-input_folder = "f:/Texas-Hold-em-poker/static/card_images"
-output_folder = "f:/Texas-Hold-em-poker/static/card_images_cropped"
-photo_management.crop_images_in_folder(input_folder, output_folder)
-
 app = Flask(__name__, static_url_path="/static")
 game = Game()
 
