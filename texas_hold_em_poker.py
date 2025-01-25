@@ -1,5 +1,5 @@
 import sys
-sys.path.append('Texas-Hold-em-poker/python_files')
+sys.path.append('f:/Texas-Hold-em-poker/python_files')  # Percorso corretto per il modulo
 
 from flask import Flask, render_template, request, jsonify
 from game import Game

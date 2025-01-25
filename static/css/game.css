@@ -102,7 +102,7 @@ body.poker-background {
 }
 
 .card img {
-    width: 80px; /* Ridimensiona le carte */
+    width: 100px; /* Ridimensiona le carte */
     height: auto;
 }
 
