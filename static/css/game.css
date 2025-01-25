@@ -1,55 +1,108 @@
 body.poker-background {
     background-image: url('/static/texas_hold_em_table.jpg');
     background-size: cover;
-    background-position: center;
-    height: 100vh;
+    background-position: center center;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+}
+
+.content-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background-color: transparent;
 }
 
 .hand {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px;
+    position: absolute;
+}
+
+#dealer-hand {
+    top: 5%;  /* Spostate le carte del dealer più in alto */
+    left: 60%;  /* Spostate le carte del dealer più a destra */
+    transform: translateX(-50%);
+}
+
+#community-cards {
+    top: 35%;  /* Spostate le carte comunitarie più in alto */
+    left: 60%;  /* Spostate le carte comunitarie più a destra */
+    transform: translateX(-50%);
+}
+
+#player-hand {
+    bottom: 10%; /* Mantiene la posizione delle carte del giocatore */
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .deck {
     position: absolute;
     right: 20px;
+    top: 20px;
 }
 
 #actions-panel {
-    position: absolute;
-    left: 20px;
+    position: fixed;
+    left: 10px;
     top: 20px;
-    background-color: white;
+    background: rgba(0, 0, 0, 0.7);
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    border-radius: 20px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+    border: 2px solid #ccc;
+    width: 250px;
+}
+
+.game-title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #fff;
 }
 
 .button {
     display: block;
     margin: 10px 0;
-    padding: 10px 20px;
+    padding: 12px 25px;
     background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
     width: 100%;
     text-align: center;
+    font-size: 16px;
+    transition: all 0.3s ease;
 }
 
 .button:hover {
     background-color: #0056b3;
+    transform: scale(1.05);
 }
 
 .card img {
-    width: 50px;
+    width: 80px; /* Ridimensiona le carte */
     height: auto;
 }
 
@@ -61,4 +114,17 @@ body.poker-background {
     color: black;
     border: 1px solid #000000;
     border-radius: 5px;
+}
+
+/* Stili per il messaggio di vittoria */
+.winner-message {
+    font-size: 20px;
+    color: #fff;
+    background-color: #28a745;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    width: fit-content;
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }

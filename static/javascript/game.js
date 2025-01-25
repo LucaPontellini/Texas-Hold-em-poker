@@ -34,11 +34,44 @@ function displayHand(hand, elementId, isFaceDown=false) {
     });
 }
 
+function showDealerCards(dealerHand) {
+    displayHand(dealerHand, 'dealer-hand', false); // Mostra le carte del dealer
+}
+
 window.onload = function() {
-    // Inizializza l'interfaccia utente quando la pagina viene caricata
+    // Non visualizzare alcuna carta fino a quando non si preme "New Game"
+    document.getElementById('dealer-hand').style.display = 'none';
+    document.getElementById('community-cards').style.display = 'none';
+    document.getElementById('player-hand').style.display = 'none';
+    document.getElementById('deck').style.display = 'none';
 };
 
+function newGame() {
+    console.log("New Game clicked");
+    fetch('/new-game', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Received response:", data);
+        // Visualizzare il mazzo e l'area delle carte dopo aver premuto "New Game"
+        document.getElementById('dealer-hand').style.display = 'flex';
+        document.getElementById('community-cards').style.display = 'flex';
+        document.getElementById('player-hand').style.display = 'flex';
+        document.getElementById('deck').style.display = 'flex';
+        document.getElementById('winner').textContent = '';
+    })
+    .catch(error => {
+        console.error('Errore:', error);
+        alert('Si è verificato un errore durante l inizio della nuova partita. Riprova.');
+    });
+}
+
 function startGame() {
+    console.log("Start Game clicked");
     fetch('/start-game', {
         method: 'POST',
         headers: {
@@ -47,6 +80,7 @@ function startGame() {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Received response:", data);
         // Aggiorna l'interfaccia utente con i dati ricevuti
         displayHand(data.player_hand, 'player-hand');
         displayHand(data.dealer_hand, 'dealer-hand', true); // Il dealer vede le sue carte coperte
@@ -61,6 +95,7 @@ function startGame() {
 }
 
 function executeAction(action) {
+    console.log("Action executed:", action);
     fetch('/', {
         method: 'POST',
         headers: {
@@ -72,12 +107,18 @@ function executeAction(action) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Received response:", data);
         // Aggiorna l'interfaccia utente con i dati ricevuti
         displayHand(data.player_hand, 'player-hand');
-        displayHand(data.dealer_hand, 'dealer-hand', true); // Il dealer vede le sue carte coperte
+        displayHand(data.dealer_hand, 'dealer-hand', data.winner !== null); // Mostra le carte del dealer se il gioco è terminato
         displayHand(data.community_cards, 'community-cards');
         displayDeck(data.deck_card, 'deck');
-        document.getElementById('winner').textContent = data.winner || '';
+        if (data.winner !== null) {
+            showDealerCards(data.dealer_hand); // Mostra le carte del dealer
+            document.getElementById('winner').innerHTML = `<div class="winner-message">${data.winner}</div>`; // Messaggio di vittoria
+        } else {
+            document.getElementById('winner').textContent = '';
+        }
     })
     .catch(error => {
         console.error('Errore:', error);
@@ -96,13 +137,9 @@ function placeBet() {
     console.log("Piazza una scommessa");
 }
 
-function newGame() {
-    // Aggiungi la logica per iniziare una nuova partita
-    console.log("Inizia una nuova partita");
-}
-
 function exitGame() {
-    // Aggiungi la logica per uscire dal gioco
+    // Aggiungi un messaggio di conferma di uscita
+    alert("Stai uscendo dal gioco. Grazie per aver giocato!");
     console.log("Esce dal gioco");
-    window.close(); // Chiude la finestra del browser
+    //window.close(); // Chiude la finestra del browser
 }

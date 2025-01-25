@@ -7,25 +7,28 @@
     <link rel="stylesheet" href="/static/css/game.css">
 </head>
 <body class="poker-background">
-    <h1>Texas Hold'em Poker</h1>
-    <div id="dealer-area">
-        <div id="dealer-hand" class="hand"></div>
-        <div id="deck" class="deck"></div>
+    <div class="overlay"></div>
+    <div class="content-wrapper">
+        <div id="actions-panel">
+            <h1 class="game-title">Texas Hold'em Poker</h1>
+            <button class="button" onclick="startGame()">Start Game</button>
+            <button class="button" onclick="placeBet()">Place Bet</button>
+            <button class="button" onclick="executeAction('check')">Check</button>
+            <button class="button" onclick="executeAction('bet')">Bet</button>
+            <button class="button" onclick="executeAction('call')">Call</button>
+            <button class="button" onclick="executeAction('raise')">Raise</button>
+            <button class="button" onclick="executeAction('fold')">Fold</button>
+            <button class="button" onclick="newGame()">New Game</button>
+            <button class="button" onclick="exitGame()">Exit</button>
+        </div>
+        <div id="dealer-area">
+            <div id="dealer-hand" class="hand"></div>
+            <div id="deck" class="deck"></div>
+        </div>
+        <div id="community-cards" class="hand"></div>
+        <div id="player-hand" class="hand"></div>
+        <div id="winner"></div>
     </div>
-    <div id="community-cards" class="hand"></div>
-    <div id="player-hand" class="hand"></div>
-    <div id="actions-panel">
-        <button class="button" onclick="startGame()">Start Game</button>
-        <button class="button" onclick="placeBet()">Place Bet</button>
-        <button class="button" onclick="executeAction('check')">Check</button>
-        <button class="button" onclick="executeAction('bet')">Bet</button>
-        <button class="button" onclick="executeAction('call')">Call</button>
-        <button class="button" onclick="executeAction('raise')">Raise</button>
-        <button class="button" onclick="executeAction('fold')">Fold</button>
-        <button class="button" onclick="newGame()">New Game</button>
-        <button class="button" onclick="exitGame()">Exit</button>
-    </div>
-    <div id="winner"></div>
     <script src="/static/javascript/game.js"></script>
 </body>
 </html>
