@@ -35,18 +35,7 @@ function displayHand(hand, elementId, isFaceDown=false) {
 }
 
 window.onload = function() {
-    fetch('/')
-    .then(response => response.json())
-    .then(data => {
-        displayHand(data.player_hand, 'player-hand');
-        displayHand(data.dealer_hand, 'dealer-hand', true); // Il dealer vede le sue carte coperte
-        displayHand(data.community_cards, 'community-cards');
-        displayDeck(data.deck_card, 'deck');
-    })
-    .catch(error => {
-        console.error('Errore:', error);
-        alert('Si è verificato un errore durante il caricamento delle carte. Riprova.');
-    });
+    // Inizializza l'interfaccia utente quando la pagina viene caricata
 };
 
 function startGame() {
@@ -67,7 +56,7 @@ function startGame() {
     })
     .catch(error => {
         console.error('Errore:', error);
-        alert('Si è verificato un errore durante l'inizio del gioco. Riprova.');
+        alert('Si è verificato un errore durante l inizio del gioco. Riprova.');
     });
 }
 
@@ -92,7 +81,7 @@ function executeAction(action) {
     })
     .catch(error => {
         console.error('Errore:', error);
-        alert('Si è verificato un errore durante l'esecuzione dell'azione. Riprova.');
+        alert('Si è verificato un errore durante l esecuzione dell azione. Riprova.');
     });
 }
 
