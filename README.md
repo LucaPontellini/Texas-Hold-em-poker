@@ -49,4 +49,4 @@ The Texas Hold'em Poker project is an update to these systems, representing vers
     ```
 2. Open your web browser and navigate to [http://localhost:5000](http://localhost:5000) to access the application.
 
-You can find all the details in the [Texas_Hold_em_Poker.md](https://github.com/LucaPontellini/Christmas-project/blob/main/texas_hold_em_poker.md) file.
+You can find all the details in the [Texas_Hold_em_Poker.md](https://github.com/LucaPontellini/Texas-Hold-em-poker/blob/f516d1ad86ca0908305878f894d34686a6365564/Texas_Hold_em_poker.md) file.
