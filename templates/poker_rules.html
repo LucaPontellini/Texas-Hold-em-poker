@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Poker Rules</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/poker_rules.css') }}">
+</head>
+<body>
+
+<h1>Poker Rules</h1>
+
+<button class="casino-button" onclick="window.location.href='/casino_home'">Go to Casino Home</button>
+<button class="casino-button" onclick="window.location.href='game.html'">Go to Poker</button>
+
+<table>
+  <tr>
+    <th>Rule</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><strong>Card Values</strong></td>
+    <td>
+      Cards are ranked in ascending order: <strong>2, 3, 4, 5, 6, 7, 8, 9, 10, Jack (J), Queen (Q), King (K), Ace (A)</strong>.<br>
+      The Ace can be worth either 1 or 14, so the possible straights are:
+      <ul>
+        <li><strong>Lowest Straight:</strong> Ace (1), 2, 3, 4, 5</li>
+        <li><strong>Highest Straight:</strong> 10, Jack (J), Queen (Q), King (K), Ace (14)</li>
+      </ul>
+      The four suits are hearts (♥), diamonds (♦), clubs (♣), and spades (♠).
+      <br>
+      <!-- Carte di cuori -->
+      <p><strong>Hearts (♥):</strong></p>
+      <img src="/static/card_images/hearts/01_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/02_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/03_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/04_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/05_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/06_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/07_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/08_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/09_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/10_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/11_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/12_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <img src="/static/card_images/hearts/13_hearts.png?raw=true" alt="Card of Hearts" class="card-image">
+      <br>
+      <!-- Carte di quadri -->
+      <p><strong>Diamonds (♦):</strong></p>
+      <img src="/static/card_images/diamonds/01_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/02_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/03_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/04_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/05_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/06_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/07_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/08_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/09_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/10_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/11_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/12_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <img src="/static/card_images/diamonds/13_diamonds.png?raw=true" alt="Card of Diamonds" class="card-image">
+      <br>
+      <p><strong>Clubs (♣):</strong></p>
+      <!-- Carte di fiori -->
+      <img src="/static/card_images/clubs/01_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/02_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/03_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/04_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/05_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/06_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/07_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/08_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/09_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/10_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/11_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/12_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <img src="/static/card_images/clubs/13_clubs.png?raw=true" alt="Card of Flowers" class="card-image">
+      <br>
+      <p><strong>Spades (♠):</strong></p>
+      <!-- Carte di picche -->
+      <img src="/static/card_images/spades/01_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/02_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/03_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/04_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/05_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/06_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/07_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/08_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/09_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/10_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/11_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/12_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <img src="/static/card_images/spades/13_spades.png?raw=true" alt="Card of Spades" class="card-image">
+      <br>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Hand Rankings</strong></td>
+    <td>
+      <ul>
+        <li><strong>Pair:</strong> Two cards of the same value.</li>
+        <li><strong>Two Pair:</strong> Two sets of pairs.</li>
+        <li><strong>Three of a Kind:</strong> Three cards of the same value.</li>
+        <li><strong>Straight:</strong> Five consecutive cards (e.g., 2-3-4-5-6).</li>
+        <li><strong>Flush:</strong> Five cards of the same suit.</li>
+        <li><strong>Full House:</strong> One pair plus a three of a kind.</li>
+        <li><strong>Four of a Kind:</strong> Four cards of the same value.</li>
+        <li><strong>Straight Flush:</strong> Straight of the same suit from ace to ten.</li>
+      </ul>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Dealing of Cards</strong></td>
+    <td>Each player receives two face-down cards (the "hole cards"). This is followed by a betting phase.</td>
+  </tr>
+  <tr>
+    <td><strong>Betting</strong></td>
+    <td>
+      <ul>
+        <li><strong>Check:</strong> Pass the turn without betting.</li>
+        <li><strong>Bet:</strong> Wager a certain number of chips.</li>
+        <li><strong>Call:</strong> Match another player's bet.</li>
+        <li><strong>Raise:</strong> Increase the bet.</li>
+        <li><strong>Fold:</strong> Surrender the hand.</li>
+      </ul>
+      Three face-up cards are then dealt on the table (the "flop"). Two more face-up cards are dealt one at a time (the "turn" and the "river"). Players aim to form the best possible hand using their hole cards and the community cards on the table.
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Winner</strong></td>
+    <td>At the end of the betting round, players reveal their cards. The player with the highest-ranking hand according to the above classification wins.</td>
+  </tr>
+</table>
+</body>
+</html>

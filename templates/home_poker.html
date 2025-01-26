@@ -17,25 +17,6 @@
   <p id="error-text"></p>
 </div>
 
-<script>
-  function showErrorMessage(message, redirectUrl) {
-    document.getElementById('error-text').innerHTML = message;
-    document.getElementById('error-message').style.display = 'block';
-    setTimeout(function() {
-      hideErrorMessage();
-      window.location.href = redirectUrl;
-    }, 5000); // Nasconde il messaggio dopo 5 secondi e reindirizza
-  }
-
-  function hideErrorMessage() {
-    document.getElementById('error-message').style.display = 'none';
-  }
-
-  // Mostra il messaggio di errore se presente
-  {% if error_message %}
-  showErrorMessage("{{ error_message }}", "{{ redirect_url }}");
-  {% endif %}
-</script>
-
+<script src="/static/javascript/home_poker.js"></script>
 </body>
 </html>
