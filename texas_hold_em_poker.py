@@ -16,11 +16,13 @@ def index():
 
     if request.method == "POST":
         action = request.form.get("action")
-        if isinstance(action, str):
-            result = game.execute_player_turn(action)
+        bet_amount = int(request.form.get("betAmount", 0))
+        
+        if action in ['check', 'call', 'bet', 'raise']:
+            result = game.execute_player_turn(action, bet_amount)
             if result == 'opponent wins':
-                return jsonify({'winner': 'opponent'})
-
+                return jsonify({'winner': 'opponent', 'phase': game.phase})
+        
         player_hand = [{'value': card.value, 'suit': card.suit} for card in game.player.cards]
         dealer_hand = [{'value': card.value, 'suit': card.suit} for card in game.opponent.cards]
         community_cards = [{'value': card.value, 'suit': card.suit} for card in game.community_cards]
@@ -32,7 +34,8 @@ def index():
             'dealer_hand': dealer_hand,
             'community_cards': community_cards,
             'deck_card': deck_card,
-            'winner': winner
+            'winner': winner,
+            'phase': game.phase
         })
 
 @app.route("/start-game", methods=["POST"])
@@ -57,16 +60,18 @@ def start_game():
 def new_game():
     global game
     game = Game()  # Crea una nuova istanza del gioco per riavviare la partita
-    player_hand = []
-    dealer_hand = []
-    community_cards = []
+    game.setup_players()  # Inizializza le carte dei giocatori e del mazzo
+    player_hand = [{'value': card.value, 'suit': card.suit} for card in game.player.cards]
+    dealer_hand = [{'value': card.value, 'suit': card.suit} for card in game.opponent.cards]
+    community_cards = [{'value': card.value, 'suit': card.suit} for card in game.community_cards]
     deck_card = {'value': 'back', 'suit': 'card_back'}
 
     return jsonify({
         'player_hand': player_hand,
         'dealer_hand': dealer_hand,
         'community_cards': community_cards,
-        'deck_card': deck_card
+        'deck_card': deck_card,
+        'winner': None
     })
 
 if __name__ == "__main__":

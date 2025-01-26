@@ -39,19 +39,19 @@ body.poker-background {
 }
 
 #dealer-hand {
-    top: 5%;  /* Spostate le carte del dealer più in alto */
-    left: 60%;  /* Spostate le carte del dealer più a destra */
+    top: 5%;  /* Posiziona le carte del dealer più in alto */
+    right: 10%;  /* Posiziona le carte del dealer più a destra */
     transform: translateX(-50%);
 }
 
 #community-cards {
-    top: 35%;  /* Spostate le carte comunitarie più in alto */
-    left: 60%;  /* Spostate le carte comunitarie più a destra */
+    top: 30%;  /* Posiziona le carte comunitarie più in alto */
+    left: 50%;  /* Centra le carte comunitarie */
     transform: translateX(-50%);
 }
 
 #player-hand {
-    bottom: 10%; /* Mantiene la posizione delle carte del giocatore */
+    bottom: 10%; /* Posiziona le carte del giocatore in basso */
     left: 50%;
     transform: translateX(-50%);
 }
@@ -60,6 +60,13 @@ body.poker-background {
     position: absolute;
     right: 20px;
     top: 20px;
+    text-align: center;
+}
+
+.deck-label {
+    font-size: 18px;
+    color: white;
+    margin-bottom: 5px;
 }
 
 #actions-panel {
@@ -118,13 +125,133 @@ body.poker-background {
 
 /* Stili per il messaggio di vittoria */
 .winner-message {
-    font-size: 20px;
+    font-size: 24px;
     color: #fff;
     background-color: #28a745;
-    padding: 15px;
+    padding: 20px;
     border-radius: 10px;
     text-align: center;
     width: fit-content;
-    margin: 0 auto;
+    margin: 20px auto;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 1000;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Animazione per il messaggio di vittoria */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Stili per la barra di scorrimento */
+.slidecontainer {
+    width: 100%; /* Width of the outside container */
+}
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 100%; /* Full-width */
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    border-radius: 50%; /* Round slider handle */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    border-radius: 50%; /* Round slider handle */
+    background: #04AA6D; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+/* Stili per il menu delle regole */
+.rules-menu {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 400px; /* Aumenta la larghezza del menu delle regole */
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 20px;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.rules-menu h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.rules-menu table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rules-menu th, .rules-menu td {
+    border: 1px solid #fff;
+    padding: 10px;
+    text-align: left;
+}
+
+.rules-menu th {
+    background-color: #333;
+}
+
+.rules-menu td ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+/* Stili per il valore delle fiches */
+.bet-text {
+    font-weight: bold;
+    color: #fff;
+    background-color: #333;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+/* Stili per il messaggio del turno */
+.turn-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 24px;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: none;
+    z-index: 1000;
 }

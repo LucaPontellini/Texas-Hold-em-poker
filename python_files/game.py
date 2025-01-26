@@ -31,14 +31,15 @@ class Game:
         elif self.phase == 'river':
             self.phase = 'showdown'
 
-    def execute_player_turn(self, action):
-        if action == 'check' or action == 'call' or action == 'bet' or action == 'raise':
+    def execute_player_turn(self, action, bet_amount=0):
+        if action in ['check', 'call', 'bet', 'raise']:
             self.next_phase()
         elif action == 'fold':
             return 'opponent wins'
 
+
     def get_winner(self):
         player_hand = self.player.cards + self.community_cards
         opponent_hand = self.opponent.cards + self.community_cards
-        player_ranking = self.poker_rules.determine_winner(player_hand, opponent_hand)
-        return player_ranking
+        winner = self.poker_rules.determine_winner(player_hand, opponent_hand)
+        return winner

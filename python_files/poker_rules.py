@@ -35,14 +35,14 @@
 class PokerRules:
     def __init__(self):
         self.hand_rankings = {
-            self.straight_flush: 9,
-            self.four_of_a_kind: 8,
-            self.full_house: 7,
-            self.flush: 6,
-            self.straight: 5,
-            self.three_of_a_kind: 4,
-            self.two_pairs: 3,
-            self.pair: 2
+            'straight_flush': 9,
+            'four_of_a_kind': 8,
+            'full_house': 7,
+            'flush': 6,
+            'straight': 5,
+            'three_of_a_kind': 4,
+            'two_pairs': 3,
+            'pair': 2
         }
 
 # Punti delle Mani nel Texas Hold'em Poker:
@@ -94,8 +94,8 @@ class PokerRules:
         return self.straight(hand) and self.flush(hand)
 
     def determine_winner(self, player_hand, opponent_hand):
-        player_ranking = max((ranking for check_hand, ranking in self.hand_rankings.items() if check_hand(player_hand)), default=1)
-        opponent_ranking = max((ranking for check_hand, ranking in self.hand_rankings.items() if check_hand(opponent_hand)), default=1)
+        player_ranking = max((self.hand_rankings[ranking] for ranking in self.hand_rankings if getattr(self, ranking)(player_hand)), default=1)
+        opponent_ranking = max((self.hand_rankings[ranking] for ranking in self.hand_rankings if getattr(self, ranking)(opponent_hand)), default=1)
 
         if player_ranking > opponent_ranking:
             return "Player wins!"

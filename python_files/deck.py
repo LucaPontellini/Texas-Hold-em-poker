@@ -10,7 +10,7 @@ class Card:
         return f"{self.value} {self.suit}"
 
     def __eq__(self, other: object) -> bool:
-        return isinstance(other, Card) and self.suit == other.suit and self.value == self.value
+        return isinstance(other, Card) and self.suit == other.suit and self.value == other.value
 
 class Deck:
     def __init__(self, deck_file_path):

@@ -12,7 +12,12 @@
         <div id="actions-panel">
             <h1 class="game-title">Texas Hold'em Poker</h1>
             <button class="button" onclick="startGame()">Start Game</button>
-            <button class="button" onclick="placeBet()">Place Bet</button>
+            <button class="button" onclick="toggleBetMenu()">Toggle Bet Menu</button>
+            <div class="slidecontainer" id="betMenu" style="display: none;">
+                <input type="range" min="1" value="50" class="slider" id="betRange">
+                <p class="bet-text">Chips to bet: <span id="betValue" class="bet-value">50</span></p>
+                <button class="button" onclick="placeBet()">Place Bet</button>
+            </div>
             <button class="button" onclick="executeAction('check')">Check</button>
             <button class="button" onclick="executeAction('bet')">Bet</button>
             <button class="button" onclick="executeAction('call')">Call</button>
@@ -23,12 +28,82 @@
         </div>
         <div id="dealer-area">
             <div id="dealer-hand" class="hand"></div>
-            <div id="deck" class="deck"></div>
+            <div id="deck" class="deck">
+                <div class="deck-label">Deck</div>
+            </div>
         </div>
         <div id="community-cards" class="hand"></div>
         <div id="player-hand" class="hand"></div>
-        <div id="winner"></div>
+        <div id="winner" class="winner-message"></div>
+        <button class="button" onclick="toggleRulesMenu()">Poker Rules</button>
+        <div id="rulesMenu" class="rules-menu" style="display: none;">
+            <h2>Texas Hold'em Poker Rules</h2>
+            <table>
+                <tr>
+                    <th>Phase</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Game Setup</td>
+                    <td>
+                        <ul>
+                            <li>Each player receives two hole cards.</li>
+                            <li>Five community cards are dealt in three stages: the flop (three cards), the turn (one card), and the river (one card).</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Betting Rounds</td>
+                    <td>
+                        <ul>
+                            <li>Pre-Flop: Players receive their two hole cards and the first betting round begins.</li>
+                            <li>Flop: Three community cards are dealt on the table, followed by a second betting round.</li>
+                            <li>Turn: A fourth community card is dealt, followed by a third betting round.</li>
+                            <li>River: A fifth community card is dealt, followed by the final betting round.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Betting Actions</td>
+                    <td>
+                        <ul>
+                            <li>Check: Pass the turn without betting.</li>
+                            <li>Bet: Wager a certain amount of chips.</li>
+                            <li>Call: Match another player's bet.</li>
+                            <li>Raise: Increase the bet.</li>
+                            <li>Fold: Abandon the hand.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Hand Rankings</td>
+                    <td>
+                        <ul>
+                            <li>Pair: Two cards of the same rank.</li>
+                            <li>Two Pair: Two pairs of cards.</li>
+                            <li>Three of a Kind: Three cards of the same rank.</li>
+                            <li>Straight: Five consecutive cards (e.g., 2-3-4-5-6).</li>
+                            <li>Flush: Five cards of the same suit.</li>
+                            <li>Full House: A pair plus three of a kind.</li>
+                            <li>Four of a Kind: Four cards of the same rank.</li>
+                            <li>Straight Flush: A straight of the same suit.</li>
+                            <li>Royal Flush: A straight from ten to ace of the same suit.</li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Showdown</td>
+                    <td>
+                        <ul>
+                            <li>After the final betting round, remaining players reveal their cards.</li>
+                            <li>The player with the best five-card hand wins the pot.</li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+        </div>
     </div>
+    <div id="turn-message" class="turn-message"></div>
     <script src="/static/javascript/game.js"></script>
 </body>
 </html>
