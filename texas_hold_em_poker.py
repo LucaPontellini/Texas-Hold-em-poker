@@ -1,9 +1,10 @@
+import os
 import sys
-sys.path.append('f:/Texas-Hold-em-poker/python_files')  # Percorso corretto per il modulo
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))
 
 from flask import Flask, render_template, request, jsonify
-from game import Game
-from deck import Card
+from python_files.game import Game
 
 app = Flask(__name__, static_url_path="/static")
 game = Game()
