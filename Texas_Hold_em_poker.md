@@ -60,5 +60,5 @@ classDiagram
 
 Note:
 
-To access the online functionalities of this poker game, use Flask as a server within the texas_hold_em_poker.py file.<br>
+To access the online functionalities of this poker game, use Flask as a server within the [texas_hold_em_poker.py]([https://github.com/LucaPontellini/Texas-Hold-em-poker/blob/aa0a418de6b135fb74e7b707a1021881beb69ec5/texas_hold_em_poker.py](https://github.com/LucaPontellini/Texas-Hold-em-poker/blob/aa0a418de6b135fb74e7b707a1021881beb69ec5/texas_hold_em_poker.py)) file.<br>
 This file not only manages web-based interactions but also initiates the game, serving as the central hub for the system's dynamic operations.
