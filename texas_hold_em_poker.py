@@ -74,5 +74,20 @@ def new_game():
         'winner': None
     })
 
+@app.route("/home_poker", methods=["GET"])
+def home_poker():
+    return render_template("home_poker.html")
+
+#TODO:
+#creare delle route per le altre pagine: home_poker e poker_rules
+#gestire i casi in cui il giocatore vince o perde per aggiornare le fiches
+#gestire il caso in cui il giocatore non ha più soldi o fiches
+#gestire il caso in cui il giocatore si arrende
+#migliorare la parte di scommessa delle fiches tramite il menu dove sono presenti i pulsanti per le azioni
+#gestire gli errori per quando si premono i pulsanti senza aver premuto prima il pulsante di start game perchè compare il messaggio delle fasi del gioco anche quando si clicca su start game
+#aggiungere la possibilità di giocare con più giocatori
+#se si realizza la possibilità di giocare con più giocatori, aggiungere la possibilità di scegliere il numero di giocatori e di creare i turni di gioco
+#creare una tabella per l'utente per vedere il quantitativo di fiches durante la partita per aggiornarla dinamicamente
+
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

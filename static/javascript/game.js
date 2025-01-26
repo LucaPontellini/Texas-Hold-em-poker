@@ -272,3 +272,25 @@ function updateButtons(state) {
         buttons.fold.style.display = 'block';
     }
 }
+
+// Funzione per avviare la musica
+function playBackgroundMusic() {
+    var backgroundMusic = document.getElementById('background-music');
+    if (backgroundMusic.paused) {
+        backgroundMusic.play();
+    }
+}
+
+// Avvia la musica quando la pagina viene caricata
+window.addEventListener('load', playBackgroundMusic);
+
+// Cambia la musica di sottofondo dopo che la prima traccia è finita
+var backgroundMusic = document.getElementById('background-music');
+backgroundMusic.addEventListener('ended', function() {
+    if (backgroundMusic.src.includes('welcome_to_new_orleans.mp3')) {
+        backgroundMusic.src = '/static/music/two_cigarettes_please.mp3';
+    } else {
+        backgroundMusic.src = '/static/music/welcome_to_new_orleans.mp3';
+    }
+    backgroundMusic.play();
+});

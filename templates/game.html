@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/css/game.css">
 </head>
 <body class="poker-background">
+    <audio id="background-music" src="{{ url_for('static', filename='music/welcome_to_new_orleans.mp3') }}" controls loop hidden></audio>
     <div class="overlay"></div>
     <div class="content-wrapper">
         <div id="actions-panel">
@@ -24,7 +25,7 @@
             <button class="button" onclick="executeAction('raise')">Raise</button>
             <button class="button" onclick="executeAction('fold')">Fold</button>
             <button class="button" onclick="newGame()">New Game</button>
-            <button class="button" onclick="window.location.href='home_poker.html'">Exit</button>
+            <button class="button" onclick="window.location.href='/'">Exit</button>
         </div>
         <div id="dealer-area">
             <div id="dealer-hand" class="hand"></div>
