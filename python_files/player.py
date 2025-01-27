@@ -6,10 +6,12 @@ class Player:
         self.cards = []
 
     def add_card(self, card: Card):
-        self.cards.append(card)
+        if card not in self.cards:
+            self.cards.append(card)
 
     def remove_card(self, card: Card):
-        self.cards.remove(card)
+        if card in self.cards:
+            self.cards.remove(card)
 
     def has_card(self, card: Card) -> bool:
         return card in self.cards

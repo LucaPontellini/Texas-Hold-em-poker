@@ -1,7 +1,6 @@
 ```mermaid
 
-classDiagram
-
+    classDiagram
     %% deck.py
     class Card {
         +__init__(self, seed: str, value: str): none
@@ -12,15 +11,32 @@ classDiagram
     class Deck {
         +__init__(self, deck_file_path): none
         +load_deck(self, deck_file_path): list[Card]
+        +create_cards(self, deck): list[Card]
     }
 
     %% game.py
     class Game {
+        +PRE_FLOP: str
+        +FLOP: str
+        +TURN: str
+        +RIVER: str
+        +SHOWDOWN: str
+        +VALID_ACTIONS: list[str]
         +__init__(self): none
         +setup_players(self): none
+        +deal_hole_cards(self): none
+        +remove_dealt_cards_from_deck(self): none
         +next_phase(self): none
-        +execute_player_turn(self, action, bet_amount=0): None | Literal['opponent wins']
+        +move_to_flop(self): none
+        +deal_flop(self): none
+        +move_to_turn(self): none
+        +deal_turn_card(self): none
+        +move_to_river(self): none
+        +deal_river_card(self): none
+        +move_to_showdown(self): none
+        +execute_player_turn(self, action: str, bet_amount=0): None | Literal['opponent wins']
         +get_winner(self): Literal['Player wins!'] | Literal['Dealer wins!'] | Literal['It\'s a tie!']
+        +combine_hands(self, player_cards: list[Card]): list[Card]
     }
 
     %% player.py
@@ -34,16 +50,35 @@ classDiagram
     %% poker_rules.py
     class PokerRules {
         +__init__(self): none
+        +define_hand_rankings(self): dict
         +distribute_cards(self, deck): tuple
-        +pair(self, hand): bool
-        +two_pairs(self, hand): bool
-        +three_of_a_kind(self, hand): bool
-        +straight(self, hand): bool
-        +flush(self, hand): bool
-        +full_house(self, hand): bool
-        +four_of_a_kind(self, hand): bool
+        +extract_values(self, hand): list[str]
+        +extract_suits(self, hand): list[str]
+        +extract_indices(self, hand): list[int]
+        +royal_flush(self, hand): bool
         +straight_flush(self, hand): bool
-        +determine_winner(self, player_hand, opponent_hand): Literal['Player wins!'] | Literal['Dealer wins!'] | Literal['It\'s a tie!']
+        +four_of_a_kind(self, hand): bool
+        +full_house(self, hand): bool
+        +flush(self, hand): bool
+        +straight(self, hand): bool
+        +three_of_a_kind(self, hand): bool
+        +two_pairs(self, hand): bool
+        +pair(self, hand): bool
+        +determine_winner(self, player_hand: list[Card], opponent_hand: list[Card]): Literal['Player wins!'] | Literal['Dealer wins!'] | Literal['It\'s a tie!']
+        +calculate_hand_ranking(self, hand: list[Card]): int
+        +compare_hand_rankings(self, player_ranking: int, opponent_ranking: int): Literal['Player wins!'] | Literal['Dealer wins!'] | Literal['It\'s a tie!']
+    }
+
+    %% app.py
+    class FlaskApp {
+        +__init__(self): none
+        +index(self): str
+        +handle_post_request(self, action: str, bet_amount: int): dict
+        +generate_game_state_response(self): dict
+        +format_hand(self, cards: list[Card]): list[dict]
+        +start_game(self): dict
+        +new_game(self): dict
+        +home_poker(self): str
     }
 
     %% Relationships
@@ -55,6 +90,7 @@ classDiagram
     PokerRules "1" --> "1" Deck : uses
     PokerRules "1" --> "2..*" Player : uses
     PokerRules "0..*" --> "1" Card : evaluates
+    FlaskApp "1" --> "1" Game : uses
 ```
 
 

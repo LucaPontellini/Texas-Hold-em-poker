@@ -13,81 +13,71 @@ game = Game()
 def index():
     if request.method == "GET":
         return render_template("game.html")
-
-    if request.method == "POST":
+    elif request.method == "POST":
         action = request.form.get("action")
         bet_amount = int(request.form.get("betAmount", 0))
-        
-        if action in ['check', 'call', 'bet', 'raise']:
-            result = game.execute_player_turn(action, bet_amount)
-            if result == 'opponent wins':
-                return jsonify({'winner': 'opponent', 'phase': game.phase})
-        
-        player_hand = [{'value': card.value, 'suit': card.suit} for card in game.player.cards]
-        dealer_hand = [{'value': card.value, 'suit': card.suit} for card in game.opponent.cards]
-        community_cards = [{'value': card.value, 'suit': card.suit} for card in game.community_cards]
-        deck_card = {'value': 'back', 'suit': 'card_back'}
-        winner = game.get_winner() if game.phase == 'showdown' else None
+        response = handle_post_request(action, bet_amount)
+        return jsonify(response)
 
-        return jsonify({
-            'player_hand': player_hand,
-            'dealer_hand': dealer_hand,
-            'community_cards': community_cards,
-            'deck_card': deck_card,
-            'winner': winner,
-            'phase': game.phase
-        })
+def handle_post_request(action, bet_amount):
+    if action in ['check', 'call', 'bet', 'raise']:
+        result = game.execute_player_turn(action, bet_amount)
+        if result == 'opponent wins':
+            return {'winner': 'opponent', 'phase': game.phase}
+
+    return generate_game_state_response()
+
+def generate_game_state_response():
+    player_hand = format_hand(game.player.cards)
+    dealer_hand = format_hand(game.opponent.cards) if game.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
+    community_cards = format_hand(game.community_cards)
+    deck_card = {'value': 'back', 'suit': 'card_back'}
+    winner = game.get_winner() if game.phase == Game.SHOWDOWN else None
+
+    return {
+        'player_hand': player_hand,
+        'dealer_hand': dealer_hand,
+        'community_cards': community_cards,
+        'deck_card': deck_card,
+        'winner': winner,
+        'phase': game.phase
+    }
+
+def format_hand(cards):
+    return [{'value': card.value, 'suit': card.suit} for card in cards]
 
 @app.route("/start-game", methods=["POST"])
 def start_game():
     global game
     game = Game()  # Inizializza una nuova partita
     game.setup_players()  # Inizializza le carte dei giocatori e del mazzo
-    player_hand = [{'value': card.value, 'suit': card.suit} for card in game.player.cards]
-    dealer_hand = [{'value': card.value, 'suit': card.suit} for card in game.opponent.cards]
-    community_cards = [{'value': card.value, 'suit': card.suit} for card in game.community_cards]
-    deck_card = {'value': 'back', 'suit': 'card_back'}
-
-    return jsonify({
-        'player_hand': player_hand,
-        'dealer_hand': dealer_hand,
-        'community_cards': community_cards,
-        'deck_card': deck_card,
-        'winner': None
-    })
+    return jsonify(generate_game_state_response())
 
 @app.route("/new-game", methods=["POST"])
 def new_game():
     global game
     game = Game()  # Crea una nuova istanza del gioco per riavviare la partita
     game.setup_players()  # Inizializza le carte dei giocatori e del mazzo
-    player_hand = [{'value': card.value, 'suit': card.suit} for card in game.player.cards]
-    dealer_hand = [{'value': card.value, 'suit': card.suit} for card in game.opponent.cards]
-    community_cards = [{'value': card.value, 'suit': card.suit} for card in game.community_cards]
-    deck_card = {'value': 'back', 'suit': 'card_back'}
-
-    return jsonify({
-        'player_hand': player_hand,
-        'dealer_hand': dealer_hand,
-        'community_cards': community_cards,
-        'deck_card': deck_card,
-        'winner': None
-    })
+    response = jsonify(generate_game_state_response())
+    print(response.get_data(as_text=True))  # Log dei dati della risposta
+    return response
 
 @app.route("/home_poker", methods=["GET"])
 def home_poker():
     return render_template("home_poker.html")
 
+if __name__ == "__main__":
+    app.run(debug=True, port=5000)
+
+
 #TODO:
-#creare delle route per le altre pagine: home_poker e poker_rules
 #gestire i casi in cui il giocatore vince o perde per aggiornare le fiches
 #gestire il caso in cui il giocatore non ha più soldi o fiches
 #gestire il caso in cui il giocatore si arrende
-#migliorare la parte di scommessa delle fiches tramite il menu dove sono presenti i pulsanti per le azioni
-#gestire gli errori per quando si premono i pulsanti senza aver premuto prima il pulsante di start game perchè compare il messaggio delle fasi del gioco anche quando si clicca su start game
 #aggiungere la possibilità di giocare con più giocatori
 #se si realizza la possibilità di giocare con più giocatori, aggiungere la possibilità di scegliere il numero di giocatori e di creare i turni di gioco
 #creare una tabella per l'utente per vedere il quantitativo di fiches durante la partita per aggiornarla dinamicamente
-
-if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+#sistemare la parte del pulsante bet perchè non si può scommettere
+#controllare se ci sono duplicati
+#integrare i file home_poker e poker_rules (tocchera trovare un moddo per collegarle tra loro senza impicci)
+#il link dek repository del mio progetto: https://github.com/LucaPontellini/Texas-Hold-em-poker.git

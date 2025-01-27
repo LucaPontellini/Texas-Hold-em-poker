@@ -5,7 +5,7 @@ body.poker-background {
     background-attachment: fixed;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
     overflow: hidden;
 }
 
@@ -28,7 +28,7 @@ body.poker-background {
     width: 100%;
     height: 100%;
     z-index: 0;
-    background-color: transparent;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .hand {
@@ -39,19 +39,19 @@ body.poker-background {
 }
 
 #dealer-hand {
-    top: 5%;  /* Posiziona le carte del dealer più in alto */
-    right: 10%;  /* Posiziona le carte del dealer più a destra */
+    top: 5%;
+    right: 10%;
     transform: translateX(-50%);
 }
 
 #community-cards {
-    top: 30%;  /* Posiziona le carte comunitarie più in alto */
-    left: 50%;  /* Centra le carte comunitarie */
+    top: 30%;
+    left: 50%;
     transform: translateX(-50%);
 }
 
 #player-hand {
-    bottom: 10%; /* Posiziona le carte del giocatore in basso */
+    bottom: 10%;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -61,12 +61,21 @@ body.poker-background {
     right: 20px;
     top: 20px;
     text-align: center;
+    z-index: 100;
 }
 
 .deck-label {
-    font-size: 18px;
-    color: white;
-    margin-bottom: 5px;
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 10px;
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200; /* Adjust the z-index for the deck label */
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    border-radius: 5px;
 }
 
 #actions-panel {
@@ -109,7 +118,7 @@ body.poker-background {
 }
 
 .card img {
-    width: 100px; /* Ridimensiona le carte */
+    width: 100px;
     height: auto;
 }
 
@@ -121,9 +130,14 @@ body.poker-background {
     color: black;
     border: 1px solid #000000;
     border-radius: 5px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-/* Stili per il messaggio di vittoria */
+.card:hover {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
 .winner-message {
     font-size: 24px;
     color: #fff;
@@ -136,10 +150,9 @@ body.poker-background {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     display: none;
     z-index: 1000;
-    animation: fadeIn 1s ease-in-out;
+    animation: fadeIn 1s ease-in-out, pulse 1s infinite;
 }
 
-/* Animazione per il messaggio di vittoria */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -149,61 +162,68 @@ body.poker-background {
     }
 }
 
-/* Stili per la barra di scorrimento */
-.slidecontainer {
-    width: 100%; /* Width of the outside container */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
-/* The slider itself */
+.slidecontainer {
+    width: 100%;
+}
+
 .slider {
-    -webkit-appearance: none;  /* Override default CSS styles */
+    -webkit-appearance: none;
     appearance: none;
-    width: 100%; /* Full-width */
-    height: 25px; /* Specified height */
-    background: #d3d3d3; /* Grey background */
-    outline: none; /* Remove outline */
-    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    width: 100%;
+    height: 25px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
     transition: opacity .2s;
 }
 
-/* Mouse-over effects */
 .slider:hover {
-    opacity: 1; /* Fully shown on mouse-over */
+    opacity: 1;
 }
 
-/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
 .slider::-webkit-slider-thumb {
-    -webkit-appearance: none; /* Override default look */
+    -webkit-appearance: none;
     appearance: none;
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    border-radius: 50%; /* Round slider handle */
-    background: #04AA6D; /* Green background */
-    cursor: pointer; /* Cursor on hover */
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
 }
 
 .slider::-moz-range-thumb {
-    width: 25px; /* Set a specific slider handle width */
-    height: 25px; /* Slider handle height */
-    border-radius: 50%; /* Round slider handle */
-    background: #04AA6D; /* Green background */
-    cursor: pointer; /* Cursor on hover */
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
 }
 
-/* Stili per il menu delle regole */
 .rules-menu {
     position: fixed;
     right: 0;
     top: 0;
-    width: 400px; /* Aumenta la larghezza del menu delle regole */
+    width: 400px;
     height: 100%;
     background: rgba(0, 0, 0, 0.9);
     color: #fff;
     padding: 20px;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 2000; /* Ensure the rules menu is above everything */
 }
 
 .rules-menu h2 {
@@ -231,7 +251,6 @@ body.poker-background {
     padding-left: 20px;
 }
 
-/* Stili per il valore delle fiches */
 .bet-text {
     font-weight: bold;
     color: #fff;
@@ -240,7 +259,6 @@ body.poker-background {
     border-radius: 5px;
 }
 
-/* Stili per il messaggio del turno */
 .turn-message {
     position: fixed;
     top: 50%;
@@ -254,4 +272,19 @@ body.poker-background {
     text-align: center;
     display: none;
     z-index: 1000;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    margin-top: 20px;
+}
+
+.progress {
+    width: 0;
+    height: 20px;
+    background-color: #4caf50;
+    text-align: center;
+    line-height: 20px;
+    color: white;
 }
