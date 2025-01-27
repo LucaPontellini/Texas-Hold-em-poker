@@ -20,8 +20,8 @@ function createCardElement(card, isFaceDown = false) {
     const value = isFaceDown ? 'back' : valueMap[card.value];
     const suit = card.suit.toLowerCase();
     const img = document.createElement('img');
-    img.src = `/static/card_images/${isFaceDown ? 'card_back.jpg' : ${suit}/${value}_${suit}.png}`;
-    img.alt = isFaceDown ? 'Card Back' : ${card.value} of ${card.suit};
+    img.src = `/static/card_images/${isFaceDown ? 'card_back.jpg' : `${suit}/${value}_${suit}.png`}`;
+    img.alt = isFaceDown ? 'Card Back' : `${card.value} of ${card.suit}`;
     cardElement.appendChild(img);
     return cardElement;
 }
@@ -194,7 +194,7 @@ function placeBet() {
     // Mostra il messaggio di scommessa
     var betMessage = document.createElement('div');
     betMessage.classList.add('bet-message');
-    betMessage.textContent = You have bet ${betAmount} chips;
+    betMessage.textContent = `You have bet ${betAmount} chips`;
     document.body.appendChild(betMessage);
     
     // Rimuove il messaggio dopo 3 secondi
