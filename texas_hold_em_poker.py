@@ -81,3 +81,19 @@ if __name__ == "__main__":
 #controllare se ci sono duplicati
 #integrare i file home_poker e poker_rules (tocchera trovare un moddo per collegarle tra loro senza impicci)
 #il link dek repository del mio progetto: https://github.com/LucaPontellini/Texas-Hold-em-poker.git
+#mostrare in output un pulsante che faccia mostrare a video la spiegazione del perchè il giocatore o il dealer ha vinto per far capire meglio la vincita, in caso mostrare solo i punteggi
+#sistemare la scritta deck sopra alla carta coperta che funge da deck (card_back.jpg)
+#togliere il bordo delle carte in campo dal file CSS perchè è più realistico
+#posizionare i pulsanti in questo modo:
+Exit
+Poker Rules
+#lasciare uno spazio per dare più slancio alla grafica (è più leggibile)
+Check
+Bet
+Call
+Raise
+Fold
+#cambiare i colori ai pulsanti per una maggiore leggibilità essendo pulsanti di gioco
+#opzioni di grafica (regole del poker):
+#- spostare il mazzo a sinistra del dealer per non coprire le regole del poker
+#
