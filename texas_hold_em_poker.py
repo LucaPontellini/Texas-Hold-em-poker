@@ -20,16 +20,20 @@ def index():
         return jsonify(response)
 
 def handle_post_request(action, bet_amount):
+    print(f"Handling action: {action}, bet amount: {bet_amount}")  # Log dell'azione e dell'importo della scommessa
     if action in ['check', 'call', 'bet', 'raise']:
-        result = game.execute_player_turn(action, bet_amount)
+        result = game.execute_turn(game.players[0], action, bet_amount)  # Utilizza `execute_turn` invece di `execute_player_turn`
+        print(f"Result of action: {result}")  # Log del risultato dell'azione
         if result == 'opponent wins':
             return {'winner': 'opponent', 'phase': game.phase}
 
-    return generate_game_state_response()
+    response = generate_game_state_response()
+    print(f"Response data: {response}")  # Log dei dati della risposta
+    return response
 
 def generate_game_state_response():
-    player_hand = format_hand(game.player.cards)
-    dealer_hand = format_hand(game.opponent.cards) if game.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
+    player_hand = format_hand(game.players[1].cards)
+    dealer_hand = format_hand(game.players[2].cards) if game.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
     community_cards = format_hand(game.community_cards)
     deck_card = {'value': 'back', 'suit': 'card_back'}
     winner = game.get_winner() if game.phase == Game.SHOWDOWN else None
@@ -96,3 +100,10 @@ if __name__ == "__main__":
 #cambiare i colori ai pulsanti per una maggiore leggibilità essendo pulsanti di gioco
 #opzioni di grafica (regole del poker):
 #- spostare il mazzo a sinistra del dealer per non coprire le regole del poker
+
+
+#per attivare il venv:
+#- andare sopra alla cartella del progetto
+#- aprire un nuovo reminale
+#- digitare il comando --> F:\Texas-Hold-em-poker\venv\Scripts\Activate.ps1
+#- se si vuole avviare il progetto --> python texas_hold_em_poker.py 

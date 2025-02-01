@@ -72,7 +72,7 @@ body.poker-background {
     top: -40px;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 200; /* Adjust the z-index for the deck label */
+    z-index: 200;
     background-color: rgba(0, 0, 0, 0.8);
     padding: 5px;
     border-radius: 5px;
@@ -223,7 +223,7 @@ body.poker-background {
     padding: 20px;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
-    z-index: 2000; /* Ensure the rules menu is above everything */
+    z-index: 2000;
 }
 
 .rules-menu h2 {

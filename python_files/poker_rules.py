@@ -1,135 +1,178 @@
+from itertools import combinations
 from deck import Card
 
-# Regole del Texas Hold'em Poker:
+#Regole del Texas Hold'em Poker:
 
-# 1. Setup del Gioco:
-#    - Ogni giocatore riceve due carte coperte (hole cards).
-#    - Cinque carte comuni vengono distribuite sul tavolo in tre fasi: il flop (tre carte), il turn (una carta) e il river (una carta).
+## 1. Setup del Gioco:
+#- Ogni giocatore riceve due carte coperte (hole cards).
+#- Cinque carte comuni vengono distribuite sul tavolo in tre fasi: il flop (tre carte), il turn (una carta) e il river (una carta).
 
-# 2. Turni di Puntata:
-#    - Pre-Flop: I giocatori ricevono le loro due carte coperte e iniziano il primo turno di puntata.
-#    - Flop: Vengono distribuite tre carte comuni sul tavolo, seguite da un secondo turno di puntata.
-#    - Turn: Viene distribuita una quarta carta comune, seguita da un terzo turno di puntata.
-#    - River: Viene distribuita una quinta carta comune, seguita dall'ultimo turno di puntata.
+## 2. Turni di Puntata:
+#- **Pre-Flop**: I giocatori ricevono le loro due carte coperte e iniziano il primo turno di puntata.
+#- **Flop**: Vengono distribuite tre carte comuni sul tavolo, seguite da un secondo turno di puntata.
+#- **Turn**: Viene distribuita una quarta carta comune, seguita da un terzo turno di puntata.
+#- **River**: Viene distribuita una quinta carta comune, seguita dall'ultimo turno di puntata.
 
-# 3. Azioni di Puntata:
-#    - Check: Passare il turno senza scommettere.
-#    - Bet: Scommettere una certa quantità di chip.
-#    - Call: Pareggiare la scommessa di un altro giocatore.
-#    - Raise: Aumentare la scommessa.
-#    - Fold: Abbandonare la mano.
+## 3. Azioni di Puntata:
+#- **Check**: Passare il turno senza scommettere.
+#- **Bet**: Scommettere una certa quantità di chip.
+#- **Call**: Pareggiare la scommessa di un altro giocatore.
+#- **Raise**: Aumentare la scommessa.
+#- **Fold**: Abbandonare la mano.
 
-# 4. Valutazione delle Mani:
-#    - Coppia: Due carte dello stesso valore.
-#    - Doppia Coppia: Due coppie di carte.
-#    - Tris: Tre carte dello stesso valore.
-#    - Scala: Cinque carte consecutive (ad esempio, 2-3-4-5-6).
-#    - Colore: Cinque carte dello stesso seme.
-#    - Full: Una coppia più un tris.
-#    - Poker: Quattro carte dello stesso valore.
-#    - Scala Colore: Scala dello stesso seme.
-#    - Scala Reale: Scala dall'asso al dieci dello stesso seme.
+## 4. Valutazione delle Mani:
+#- **Coppia**: Due carte dello stesso valore.
+#- **Doppia Coppia**: Due coppie di carte.
+#- **Tris**: Tre carte dello stesso valore.
+#- **Scala**: Cinque carte consecutive (ad esempio, 2-3-4-5-6).
+#- **Colore**: Cinque carte dello stesso seme.
+#- **Full**: Una coppia più un tris.
+#- **Poker**: Quattro carte dello stesso valore.
+#- **Scala Colore**: Scala dello stesso seme.
+#- **Scala Reale**: Scala dall'asso al dieci dello stesso seme.
 
-# 5. Showdown:
-#    - Dopo l'ultimo turno di puntata, i giocatori rimanenti mostrano le loro carte.
-#    - Il giocatore con la migliore mano di cinque carte vince il piatto.
+## 5. Showdown:
+#- Dopo l'ultimo turno di puntata, i giocatori rimanenti mostrano le loro carte.
+#- Il giocatore con la migliore mano di cinque carte vince il piatto.
 
 
 class PokerRules:
     def __init__(self):
         self.hand_rankings = self.define_hand_rankings()
 
+    # Punti delle Mani nel Texas Hold'em Poker:
     def define_hand_rankings(self):
         return {
-            'royal_flush': 10,
-            'straight_flush': 9,
-            'four_of_a_kind': 8,
-            'full_house': 7,
-            'flush': 6,
-            'straight': 5,
-            'three_of_a_kind': 4,
-            'two_pairs': 3,
-            'pair': 2,
-            'high_card': 1
+            'royal_flush': 10,  # Scala reale (Royal Flush)
+            'straight_flush': 9,  # Scala colore (Straight Flush)
+            'four_of_a_kind': 8,  # Poker (Four of a Kind)
+            'full_house': 7,  # Full (Full House)
+            'flush': 6,  # Colore (Flush)
+            'straight': 5,  # Scala (Straight)
+            'three_of_a_kind': 4,  # Tris (Three of a Kind)
+            'two_pairs': 3,  # Doppia coppia (Two Pairs)
+            'pair': 2,  # Coppia (Pair)
+            'high_card': 1  # Carta alta (High Card)
         }
 
-# Punti delle Mani nel Texas Hold'em Poker:
-#    - Scala Colore (Straight Flush): 9 punti
-#    - Poker (Four of a Kind): 8 punti
-#    - Full (Full House): 7 punti
-#    - Colore (Flush): 6 punti
-#    - Scala (Straight): 5 punti
-#    - Tris (Three of a Kind): 4 punti
-#    - Doppia Coppia (Two Pairs): 3 punti
-#    - Coppia (Pair): 2 punti
-
-
-    def distribute_cards(self, deck):
-        player_cards = deck[:2]
-        opponent_cards = deck[2:4]
-        return player_cards, opponent_cards
+    def distribute_cards(self, deck, num_players=2):
+        hands = []
+        for i in range(num_players):
+            start_index = i * 2
+            end_index = (i + 1) * 2
+            hand = deck[start_index:end_index]
+            hands.append(hand)
+        return hands
 
     def extract_values(self, hand):
-        return [card.value for card in hand]
+        values = []
+        for card in hand:
+            values.append(card.value)
+        return values
 
     def extract_suits(self, hand):
-        return [card.suit for card in hand]
+        suits = []
+        for card in hand:
+            suits.append(card.suit)
+        return suits
 
     def extract_indices(self, hand):
         card_values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-        indices = [card_values.index(card.value) for card in hand]
+        indices = []
+        for card in hand:
+            index = card_values.index(card.value)
+            indices.append(index)
         return sorted(indices)
 
-    # Royal Flush
     def royal_flush(self, hand):
+        # Scala reale (Royal Flush): Scala colore con 10, J, Q, K, A
         card_values = ['10', 'J', 'Q', 'K', 'A']
         return self.straight_flush(hand) and all(card.value in card_values for card in hand)
 
-    # Straight Flush
     def straight_flush(self, hand):
+        # Scala colore (Straight Flush): Scala con tutte le carte dello stesso seme
         return self.straight(hand) and self.flush(hand)
 
-    # Four of a Kind
     def four_of_a_kind(self, hand):
+        # Poker (Four of a Kind): Quattro carte dello stesso valore
         values = self.extract_values(hand)
-        return any(values.count(value) == 4 for value in values)
+        for value in values:
+            if values.count(value) == 4:
+                return True
+        return False
 
-    # Full House
     def full_house(self, hand):
+        # Full (Full House): Tris e Coppia
         values = self.extract_values(hand)
-        return self.three_of_a_kind(hand) and any(values.count(value) == 2 for value in values)
+        three_of_a_kind = self.three_of_a_kind(hand)
+        two_of_a_kind = any(values.count(value) == 2 for value in values)
+        return three_of_a_kind and two_of_a_kind
 
-    # Flush
     def flush(self, hand):
+        # Colore (Flush): Cinque carte dello stesso seme
         suits = self.extract_suits(hand)
         return len(set(suits)) == 1
 
-    # Straight
     def straight(self, hand):
+        # Scala (Straight): Cinque carte in sequenza
         indices = self.extract_indices(hand)
         return indices == list(range(indices[0], indices[0] + 5)) or indices == [0, 1, 2, 3, 12]
 
-    # Three of a Kind
     def three_of_a_kind(self, hand):
+        # Tris (Three of a Kind): Tre carte dello stesso valore
         values = self.extract_values(hand)
-        return any(values.count(value) == 3 for value in values)
+        for value in values:
+            if values.count(value) == 3:
+                return True
+        return False
 
-    # Two Pairs
     def two_pairs(self, hand):
+        # Doppia coppia (Two Pairs): Due coppie di carte dello stesso valore
         values = self.extract_values(hand)
-        pairs = [value for value in set(values) if values.count(value) == 2]
+        pairs = []
+        for value in set(values):
+            if values.count(value) == 2:
+                pairs.append(value)
         return len(pairs) == 2
 
-    # Pair
     def pair(self, hand):
+        # Coppia (Pair): Due carte dello stesso valore
         values = self.extract_values(hand)
-        return any(values.count(value) == 2 for value in values)
+        for value in values:
+            if values.count(value) == 2:
+                return True
+        return False
 
-    # Determine the winner
-    def determine_winner(self, player_hand, opponent_hand):
-        player_ranking = self.calculate_hand_ranking(player_hand)
-        opponent_ranking = self.calculate_hand_ranking(opponent_hand)
-        return self.compare_hand_rankings(player_ranking, opponent_ranking)
+    def determine_winner(self, player_hand, opponent_hand, community_cards, player_name="Giocatore", opponent_name="Bot1"):
+        player_best_hand = self.get_best_hand(player_hand + community_cards)
+        opponent_best_hand = self.get_best_hand(opponent_hand + community_cards)
+        player_ranking = self.calculate_hand_ranking(player_best_hand)
+        opponent_ranking = self.calculate_hand_ranking(opponent_best_hand)
+        
+        result = self.compare_hand_rankings(player_ranking, opponent_ranking)
+        player_hand_name = self.hand_name(player_best_hand)
+        opponent_hand_name = self.hand_name(opponent_best_hand)
+        
+        if result == "win":
+            return f"{player_name} wins with {player_hand_name} worth {player_ranking} points against {opponent_name}'s {opponent_hand_name} worth {opponent_ranking} points!"
+        elif result == "lose":
+            return f"{opponent_name} wins with {opponent_hand_name} worth {opponent_ranking} points against {player_name}'s {player_hand_name} worth {player_ranking} points!"
+        else:
+            return f"It's a tie! Both {player_name} and {opponent_name} have {player_hand_name} worth {player_ranking} points."
+
+    def get_best_hand(self, cards):
+        best_hand = None
+        highest_ranking = 0
+
+        all_combinations = list(combinations(cards, 5))
+
+        for hand in all_combinations:
+            hand_ranking = self.calculate_hand_ranking(hand)
+            if hand_ranking > highest_ranking:
+                highest_ranking = hand_ranking
+                best_hand = hand
+
+        return best_hand
 
     def calculate_hand_ranking(self, hand):
         for ranking, points in self.hand_rankings.items():
@@ -139,8 +182,14 @@ class PokerRules:
 
     def compare_hand_rankings(self, player_ranking, opponent_ranking):
         if player_ranking > opponent_ranking:
-            return "Player wins!"
+            return "win"
         elif opponent_ranking > player_ranking:
-            return "Dealer wins!"
+            return "lose"
         else:
-            return "It's a tie!"
+            return "tie"
+
+    def hand_name(self, hand):
+        for ranking in self.hand_rankings.keys():
+            if getattr(self, ranking)(hand):
+                return ranking.replace('_', ' ').title()
+        return "High Card"
