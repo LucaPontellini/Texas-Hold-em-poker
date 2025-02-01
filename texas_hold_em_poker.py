@@ -85,15 +85,14 @@ if __name__ == "__main__":
 #sistemare la scritta deck sopra alla carta coperta che funge da deck (card_back.jpg)
 #togliere il bordo delle carte in campo dal file CSS perchè è più realistico
 #posizionare i pulsanti in questo modo:
-Exit
-Poker Rules
+#Exit
+#Poker Rules
 #lasciare uno spazio per dare più slancio alla grafica (è più leggibile)
-Check
-Bet
-Call
-Raise
-Fold
+#Check
+#Bet
+#Call
+#Raise
+#Fold
 #cambiare i colori ai pulsanti per una maggiore leggibilità essendo pulsanti di gioco
 #opzioni di grafica (regole del poker):
 #- spostare il mazzo a sinistra del dealer per non coprire le regole del poker
-#
