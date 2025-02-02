@@ -23,10 +23,10 @@
                 <button id="fold" class="button" data-tooltip="Fold: Abandon the hand." onclick="executeAction('fold')">Fold</button>
             </div>
             <div class="slidecontainer" id="betMenu" style="display: none;">
-                <input type="range" min="1" value="50" class="slider" id="betRange">
+                <input type="range" min="1" value="50" class="slider" id="betRange" oninput="updateBetValue()">
                 <p class="bet-text">Chips to bet: <span id="betValue" class="bet-value">50</span></p>
                 <button class="button" onclick="placeBet()">Place Bet</button>
-            </div>
+            </div>            
             <button id="rules" class="button" onclick="toggleRulesMenu()">Poker Rules</button>
             <div id="rulesMenu" class="rules-menu" style="display: none;">
                 <h2>Texas Hold'em Poker Rules</h2>        
@@ -99,8 +99,11 @@
             <div id="dealer-hand" class="hand"></div>
             <div id="deck" class="deck">
                 <div class="deck-label">Deck</div>
+                <img src="/static/card_images/card_back.jpg" alt="Deck">
             </div>
-        </div>
+            <div id="blinds-info" class="info"></div>           
+            <div id="turn-info" class="info"></div>
+        </div>        
         <div id="community-cards" class="hand"></div>
         <div id="player-hand" class="hand"></div>
         <div id="winner" class="winner-message"></div>

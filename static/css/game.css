@@ -64,6 +64,11 @@ body.poker-background {
     z-index: 100;
 }
 
+.deck img {
+    width: 100px;
+    height: auto;
+}
+
 .deck-label {
     font-size: 24px;
     color: #fff;
@@ -76,6 +81,7 @@ body.poker-background {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 5px;
     border-radius: 5px;
+    display: none;  /* Nasconde la scritta inizialmente */
 }
 
 #actions-panel {
@@ -126,9 +132,8 @@ body.poker-background {
     display: inline-block;
     margin: 5px;
     padding: 10px;
-    background-color: #ffffff;
+    background-color: transparent;
     color: black;
-    border: 1px solid #000000;
     border-radius: 5px;
     transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
@@ -223,7 +228,7 @@ body.poker-background {
     padding: 20px;
     box-shadow: -5px 0 15px rgba(0, 0, 0, 0.5);
     overflow-y: auto;
-    z-index: 2000;
+    z-index: 2000;  /* Z-index superiore */
 }
 
 .rules-menu h2 {
@@ -287,4 +292,76 @@ body.poker-background {
     text-align: center;
     line-height: 20px;
     color: white;
+}
+
+/* Stili per illuminare le carte vincenti */
+.winning-card {
+    border: 2px solid gold;
+    animation: glow 1s infinite;
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 10px gold;
+    }
+    50% {
+        box-shadow: 0 0 20px gold;
+    }
+    100% {
+        box-shadow: 0 0 10px gold;
+    }
+}
+
+/* Stili per la sezione delle azioni dei giocatori */
+#players-actions {
+    position: fixed;
+    top: 10%;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+/* Stili per la sezione delle informazioni sui blinds */
+#blinds-info {
+    position: fixed;
+    top: 5%;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    z-index: 1000;
+}
+
+/* Stili per la sezione delle fiches dei giocatori */
+#chips-table {
+    position: fixed;
+    bottom: 10%;
+    right: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    z-index: 1000;
+    width: 200px;
+}
+
+#chips-table table {
+    width: 100%;
+    border-collapse: collapse;
+    color: white;
+}
+
+#chips-table th, #chips-table td {
+    padding: 5px;
+    text-align: left;
+}
+
+#chips-table th {
+    background-color: #333;
 }

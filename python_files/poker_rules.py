@@ -193,3 +193,45 @@ class PokerRules:
             if getattr(self, ranking)(hand):
                 return ranking.replace('_', ' ').title()
         return "High Card"
+    
+    def get_hand_explanation(self, hand):
+        if self.royal_flush(hand):
+            return ("Hand: Royal Flush\n"
+                    "The highest straight flush, consisting of the ace, king, queen, jack and ten all of the same suit.\n"
+                    "Worth 10 points.")
+        elif self.straight_flush(hand):
+            return ("Hand: Straight Flush\n"
+                    "Five consecutive cards of the same suit.\n"
+                    "Worth 9 points.")
+        elif self.four_of_a_kind(hand):
+            return ("Hand: Four of a Kind\n"
+                    "Four cards of the same rank.\n"
+                    "Worth 8 points.")
+        elif self.full_house(hand):
+            return ("Hand: Full House\n"
+                    "Three of a kind combined with a pair.\n"
+                    "Worth 7 points.")
+        elif self.flush(hand):
+            return ("Hand: Flush\n"
+                    "Five cards of the same suit, not in sequence.\n"
+                    "Worth 6 points.")
+        elif self.straight(hand):
+            return ("Hand: Straight\n"
+                    "Five consecutive cards of different suits.\n"
+                    "Worth 5 points.")
+        elif self.three_of_a_kind(hand):
+            return ("Hand: Three of a Kind\n"
+                    "Three cards of the same rank.\n"
+                    "Worth 4 points.")
+        elif self.two_pairs(hand):
+            return ("Hand: Two Pairs\n"
+                    "Two different pairs.\n"
+                    "Worth 3 points.")
+        elif self.pair(hand):
+            return ("Hand: Pair\n"
+                    "Two cards of the same rank.\n"
+                    "Worth 2 points.")
+        else:
+            return ("Hand: High Card\n"
+                    "None of the above combinations.\n"
+                    "Worth 1 point.")

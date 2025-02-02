@@ -1,13 +1,13 @@
 import os
 import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))
-
 from flask import Flask, render_template, request, jsonify
-from python_files.game import Game
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))  # Aggiungi questa riga
+
+from python_files.game import Game, Bot
 
 app = Flask(__name__, static_url_path="/static")
-game = Game()
+game = None
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -20,51 +20,58 @@ def index():
         return jsonify(response)
 
 def handle_post_request(action, bet_amount):
-    print(f"Handling action: {action}, bet amount: {bet_amount}")  # Log dell'azione e dell'importo della scommessa
-    if action in ['check', 'call', 'bet', 'raise']:
-        result = game.execute_turn(game.players[0], action, bet_amount)  # Utilizza `execute_turn` invece di `execute_player_turn`
-        print(f"Result of action: {result}")  # Log del risultato dell'azione
-        if result == 'opponent wins':
-            return {'winner': 'opponent', 'phase': game.phase}
+    print(f"Handling action: {action}, bet amount: {bet_amount}")
+    if action in ['check', 'call', 'bet', 'raise', 'fold']:
+        current_player = game.turn_manager.get_current_player()
+        print(f"Current player: {current_player.name} ({type(current_player).__name__})")  # Debugging
+        message = game.execute_turn(current_player, action, bet_amount)
+        print(f"Result of action: {message}")
 
-    response = generate_game_state_response()
-    print(f"Response data: {response}")  # Log dei dati della risposta
+        if message == 'opponent wins':
+            return {'winner': 'opponent', 'phase': game.phase, 'message': message}
+
+        while isinstance(current_player, Bot):
+            game.execute_phase()
+            current_player = game.turn_manager.get_current_player()
+
+    response = game.generate_game_state_response()
+    response['message'] = message
+    print(f"Response data: {response}")
     return response
-
-def generate_game_state_response():
-    player_hand = format_hand(game.players[1].cards)
-    dealer_hand = format_hand(game.players[2].cards) if game.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
-    community_cards = format_hand(game.community_cards)
-    deck_card = {'value': 'back', 'suit': 'card_back'}
-    winner = game.get_winner() if game.phase == Game.SHOWDOWN else None
-
-    return {
-        'player_hand': player_hand,
-        'dealer_hand': dealer_hand,
-        'community_cards': community_cards,
-        'deck_card': deck_card,
-        'winner': winner,
-        'phase': game.phase
-    }
-
-def format_hand(cards):
-    return [{'value': card.value, 'suit': card.suit} for card in cards]
-
-@app.route("/start-game", methods=["POST"])
-def start_game():
-    global game
-    game = Game()  # Inizializza una nuova partita
-    game.setup_players()  # Inizializza le carte dei giocatori e del mazzo
-    return jsonify(generate_game_state_response())
 
 @app.route("/new-game", methods=["POST"])
 def new_game():
     global game
-    game = Game()  # Crea una nuova istanza del gioco per riavviare la partita
-    game.setup_players()  # Inizializza le carte dei giocatori e del mazzo
-    response = jsonify(generate_game_state_response())
-    print(response.get_data(as_text=True))  # Log dei dati della risposta
-    return response
+    game = Game()
+    game.setup_players()
+    response = game.generate_game_state_response()
+    print("Generated game state response:", response)
+    return jsonify(response)
+
+@app.route("/start-game", methods=["POST"])
+def start_game():
+    global game
+    try:
+        game = Game()
+        game.setup_players()
+        response = game.generate_game_state_response()
+        response['current_turn'] = game.assign_turns()
+        response['blinds_info'] = game.assign_blinds()
+        return jsonify(response)
+    except Exception as e:
+        print(f"Errore durante l'avvio del gioco: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+@app.route("/advance-turn", methods=["POST"])
+def advance_turn():
+    global game
+    print("Advance turn endpoint called")  # Aggiungi questa riga
+    game.turn_manager.next_turn()
+    current_player = game.turn_manager.get_current_player()
+    if isinstance(current_player, Bot):
+        game.execute_phase()
+    response = game.generate_game_state_response()
+    return jsonify(response)
 
 @app.route("/home_poker", methods=["GET"])
 def home_poker():
@@ -72,7 +79,6 @@ def home_poker():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
-
 
 #TODO:
 #gestire i casi in cui il giocatore vince o perde per aggiornare le fiches
