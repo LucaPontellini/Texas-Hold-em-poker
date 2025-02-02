@@ -41,11 +41,11 @@ class Game:
         self.phase = Game.PRE_FLOP
         self.poker_rules = PokerRules()
         self.pot = 0
+        self.current_bet = 0
         self.small_blind, self.big_blind = self.set_blinds()
         self.players_actions = []
         self.blinds_info = {'small_blind': None, 'big_blind': None}
         self.turn_manager = TurnManager(self.players)
-        self.setup_players()
 
     def create_players(self, num_players):
         players = [Player("player")]
@@ -62,7 +62,7 @@ class Game:
     def setup_players(self):
         self.deal_hole_cards()
         self.post_blinds()
-        self.remove_dealt_cards_from_deck(2 * len(self.players))
+        print(f"Deck after dealing hole cards: {len(self.deck)}")  # Debugging
 
     def post_blinds(self):
         small_blind_player = self.players[0]
@@ -78,22 +78,20 @@ class Game:
         for player in self.players:
             player.cards = self.deck[:2]
             self.deck = self.deck[2:]
-
-    def remove_dealt_cards_from_deck(self, num_cards):
-        self.deck = self.deck[num_cards:]
+        print(f"Deck after dealing hole cards: {len(self.deck)}")
 
     def move_to_flop(self):
         self.phase = Game.FLOP
-        self.turn_manager.current_turn = self.turn_manager.find_big_blind()  # Avanza al giocatore alla sinistra del dealer per il flop
+        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
         self.deal_flop()
 
     def deal_flop(self):
         self.community_cards = self.deck[:3]
-        self.remove_dealt_cards_from_deck(3)
+        self.deck = self.deck[3:]
 
     def move_to_turn(self):
         self.phase = Game.TURN
-        self.turn_manager.current_turn = self.turn_manager.find_big_blind()  # Avanza al giocatore alla sinistra del dealer per il turn
+        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
         self.deal_turn_card()
 
     def deal_turn_card(self):
@@ -101,7 +99,7 @@ class Game:
 
     def move_to_river(self):
         self.phase = Game.RIVER
-        self.turn_manager.current_turn = self.turn_manager.find_big_blind()  # Avanza al giocatore alla sinistra del dealer per il river
+        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
         self.deal_river_card()
 
     def deal_river_card(self):
@@ -120,7 +118,7 @@ class Game:
             if isinstance(current_player, Bot):
                 try:
                     action = current_player.make_decision(
-                        {'community_cards': self.community_cards, 'players': self.players, 'current_bet': self.current_bet, 'pot': self.pot},  # Aggiungi current_bet e pot
+                        {'community_cards': self.community_cards, 'players': self.players, 'current_bet': self.current_bet, 'pot': self.pot},
                         BettingRound[self.phase.upper()]
                     )
                     print(f"Bot action: {current_player.name} -> {action}")
@@ -133,11 +131,11 @@ class Game:
                 break
             actions_taken += 1
             print(f"Actions taken: {actions_taken}, Total players: {len(self.players)}")
-    
+
         if actions_taken >= len(self.players):
             self.next_phase()
             print(f"Advancing to next phase: {self.phase}")
-    
+
     def execute_turn(self, player, action, bet_amount=0):
         print(f"Executing turn: {player.name} -> action: {action}, bet amount: {bet_amount}")
         message = f"{player.name} executes action: {action} with bet amount: {bet_amount}"
@@ -149,7 +147,6 @@ class Game:
                 self.pot += player.bet_chips(bet_amount)
                 message = f"{player.name} bets: {bet_amount} chips"
             elif action in ['call', 'raise']:
-                # Logica per call e raise
                 pass
             self.players_actions.append((player.name, action, bet_amount))
             self.turn_manager.next_turn()
@@ -201,7 +198,7 @@ class Game:
 
     def assign_turns(self):
         starting_player = random.choice(self.players)
-        print(f"Starting player: {starting_player.name}")  # Debug
+        print(f"Starting player: {starting_player.name}")
         self.current_turn = starting_player.name
         return self.current_turn
 
@@ -242,5 +239,13 @@ class Game:
             'current_turn': self.players[self.turn_manager.current_turn].name
         }
     
-    def format_hand(self, cards):
+    def format_hand(self, cards):# -> list[dict[str, Any]]:
         return [{'value': card.value, 'suit': card.suit} for card in cards]
+
+# Example execution if needed
+if __name__ == "__main__":
+    game = Game(num_players=4)
+    game.setup_players()
+    game.start_game()
+    response = game.generate_game_state_response()
+    print(response)

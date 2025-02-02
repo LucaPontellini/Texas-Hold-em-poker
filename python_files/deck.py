@@ -19,7 +19,8 @@ class Card:
 class Deck:
     def __init__(self, deck_file_path):
         self.deck_data = self.load_deck(deck_file_path)
-        self.shuffle()  # Sposta questa linea qui
+        self.shuffle()  # Mescola le carte
+        self.print_deck()  # Stampa il mazzo per debug
 
     def load_deck(self, deck_file_path):
         try:
@@ -44,3 +45,8 @@ class Deck:
 
     def draw_card(self):
         return self.deck_data.pop() if self.deck_data else None
+
+    def print_deck(self):
+        print(f"Deck size: {len(self.deck_data)}")
+        for card in self.deck_data:
+            print(card)

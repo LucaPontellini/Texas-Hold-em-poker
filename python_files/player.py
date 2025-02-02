@@ -60,15 +60,19 @@ class Bot(Player):
         hand_strength = self.evaluate_hand(game_state['community_cards'])
         pot_odds = self.calculate_pot_odds(game_state)
         opponent_behavior = self.analyze_opponent_behavior(game_state)
-    
-        print(f"Bot {self.name}: hand_strength={hand_strength}, pot_odds={pot_odds}, opponent_behavior={opponent_behavior}, betting_round={betting_round}")  # Debug
-    
+
+        print(f"Bot {self.name}: hand_strength={hand_strength}, pot_odds={pot_odds}, opponent_behavior={opponent_behavior}, betting_round={betting_round}")
+
         if betting_round == BettingRound.PRE_FLOP:
             decision = self.pre_flop_decision(hand_strength, pot_odds, opponent_behavior)
         else:
             decision = self.post_flop_decision(hand_strength, game_state, pot_odds, opponent_behavior)
-    
-        print(f"Bot {self.name}: decision={decision}")  # Debug
+
+        print(f"Bot {self.name}: decision={decision}")
+
+        if decision not in ['fold', 'call', 'raise']:
+            decision = 'fold'
+
         return decision
 
     def pre_flop_decision(self, hand_strength, pot_odds, opponent_behavior):
@@ -93,6 +97,8 @@ class Bot(Player):
 
     def evaluate_hand(self, community_cards):
         all_cards = self.cards + community_cards
+        if not all_cards:
+            return 0  # Nessuna carta, forza della mano è 0
 
         if self.poker_rules.full_house(all_cards):
             return 7

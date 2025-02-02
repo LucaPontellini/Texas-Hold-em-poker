@@ -2,7 +2,7 @@ import os
 import sys
 from flask import Flask, render_template, request, jsonify
 
-sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))  # Aggiungi questa riga
+sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))
 
 from python_files.game import Game, Bot
 
@@ -65,7 +65,7 @@ def start_game():
 @app.route("/advance-turn", methods=["POST"])
 def advance_turn():
     global game
-    print("Advance turn endpoint called")  # Aggiungi questa riga
+    print("Advance turn endpoint called")
     game.turn_manager.next_turn()
     current_player = game.turn_manager.get_current_player()
     if isinstance(current_player, Bot):
