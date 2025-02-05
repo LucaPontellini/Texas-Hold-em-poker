@@ -1,8 +1,7 @@
 import random
-import time
-
-from player import BettingRound, Player, Dealer, Bot
-from deck import Deck
+from flask import request
+from player import BotType, Player, Dealer, Bot, BettingRound
+from deck import Deck, Card
 from poker_rules import PokerRules
 
 class TurnManager:
@@ -19,9 +18,22 @@ class TurnManager:
     def next_turn(self):
         self.current_turn = (self.current_turn + 1) % len(self.players)
         print(f"È il turno di {self.players[self.current_turn].name}")
+        return self.get_current_player()
 
     def get_current_player(self):
         return self.players[self.current_turn]
+
+    def send_turn_to_flask(self):
+        current_player = self.get_current_player()
+        data = {'current_turn': current_player.name}
+        try:
+            response = request.post('http://localhost:5000/advance-turn', json=data)
+            if response.status_code == 200:
+                print("Turn information sent successfully")
+            else:
+                print(f"Failed to send turn information: {response.status_code}")
+        except request.exceptions.RequestException as e:
+            print(f"Error sending turn information: {e}")
 
 class Game:
     PRE_FLOP = 'pre-flop'
@@ -49,7 +61,8 @@ class Game:
 
     def create_players(self, num_players):
         players = [Player("player")]
-        bots = [Bot(f"Bot{i+1}") for i in range(num_players - 1)]
+        bot_types = [BotType.AGGRESSIVE, BotType.CONSERVATIVE, BotType.BLUFFER]
+        bots = [Bot(f"Bot{i+1}", random.choice(bot_types)) for i in range(num_players - 1)]
         all_players = players + bots
         random.shuffle(all_players)
         return all_players
@@ -109,33 +122,6 @@ class Game:
         self.phase = Game.SHOWDOWN
         self.evaluate_hands()
 
-    def execute_phase(self):
-        print(f"Executing phase: {self.phase}")
-        actions_taken = 0
-        while actions_taken < len(self.players):
-            current_player = self.turn_manager.get_current_player()
-            print(f"Current turn: {current_player.name} ({type(current_player).__name__})")
-            if isinstance(current_player, Bot):
-                try:
-                    action = current_player.make_decision(
-                        {'community_cards': self.community_cards, 'players': self.players, 'current_bet': self.current_bet, 'pot': self.pot},
-                        BettingRound[self.phase.upper()]
-                    )
-                    print(f"Bot action: {current_player.name} -> {action}")
-                    self.execute_turn(current_player, action)
-                except KeyError as e:
-                    print(f"Error: {e}")
-                    break
-            else:
-                print(f"Waiting for action from {current_player.name}")
-                break
-            actions_taken += 1
-            print(f"Actions taken: {actions_taken}, Total players: {len(self.players)}")
-
-        if actions_taken >= len(self.players):
-            self.next_phase()
-            print(f"Advancing to next phase: {self.phase}")
-
     def execute_turn(self, player, action, bet_amount=0):
         print(f"Executing turn: {player.name} -> action: {action}, bet amount: {bet_amount}")
         message = f"{player.name} executes action: {action} with bet amount: {bet_amount}"
@@ -145,25 +131,32 @@ class Game:
                 self.players.remove(player)
             elif action == 'bet' and bet_amount > 0:
                 self.pot += player.bet_chips(bet_amount)
+                self.current_bet = bet_amount
                 message = f"{player.name} bets: {bet_amount} chips"
-            elif action in ['call', 'raise']:
-                pass
+            elif action == 'raise' and bet_amount > 0:
+                self.pot += player.bet_chips(bet_amount)
+                self.current_bet += bet_amount
+                message = f"{player.name} raises: {bet_amount} chips"
+            elif action == 'call':
+                self.pot += player.bet_chips(self.current_bet)
+                message = f"{player.name} calls: {self.current_bet} chips"
+            elif action == 'check':
+                message = f"{player.name} checks"
             self.players_actions.append((player.name, action, bet_amount))
-            self.turn_manager.next_turn()
-        else:
-            raise ValueError(f"Invalid action: {action}")
+
+            all_cards = self.combine_hands(player.cards)
+            player_hand_strength = self.poker_rules.calculate_hand_ranking(all_cards)
+            print(f"Player {player.name}'s hand strength: {player_hand_strength}")
+
+        self.turn_manager.next_turn()  # Avanza al turno successivo
         return message
 
-    def next_phase(self):
-        if self.phase == Game.PRE_FLOP:
-            self.move_to_flop()
-        elif self.phase == Game.FLOP:
-            self.move_to_turn()
-        elif self.phase == Game.TURN:
-            self.move_to_river()
-        elif self.phase == Game.RIVER:
-            self.move_to_showdown()
-        print(f"Next phase: {self.phase}")
+    def execute_phase(self):
+        current_player = self.turn_manager.get_current_player()
+        if isinstance(current_player, Bot):
+            action, bet_amount = current_player.make_decision(self.generate_game_state_response(), self.phase)
+            self.execute_turn(current_player, action, bet_amount)
+        self.turn_manager.next_turn()  # Move to the next turn, whether it's a Bot or a Human
 
     def evaluate_hands(self):
         best_hands = {}
@@ -178,13 +171,35 @@ class Game:
         print(f"{winner} wins with {winner_hand} and wins {self.pot} chips!")
 
     def combine_hands(self, player_cards):
-        return player_cards + self.community_cards
+        all_cards = []
+        for card in player_cards + self.community_cards:
+            if isinstance(card, dict):
+                all_cards.append(Card(card['value'], card['suit']))
+            else:
+                all_cards.append(card)
+        return all_cards
 
     def start_game(self):
         while self.phase != Game.SHOWDOWN:
             self.execute_phase()
+            self.check_phase_end()
         winner = self.get_winner()
         print(winner)
+
+    def check_phase_end(self):
+        if self.turn_manager.current_turn == 0:  # Avanza la fase dopo il turno del big blind
+            self.next_phase()
+
+    def next_phase(self):
+        if self.phase == Game.PRE_FLOP:
+            self.move_to_flop()
+        elif self.phase == Game.FLOP:
+            self.move_to_turn()
+        elif self.phase == Game.TURN:
+            self.move_to_river()
+        elif self.phase == Game.RIVER:
+            self.move_to_showdown()
+        print(f"Next phase: {self.phase}")
 
     def get_winner(self):
         best_hands = {}
@@ -210,21 +225,30 @@ class Game:
         return self.blinds_info
 
     def generate_game_state_response(self):
-        player_hand = self.format_hand(self.players[1].cards)
-        dealer_hand = self.format_hand(self.players[2].cards) if self.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
+        try:
+            player_index = next(i for i, p in enumerate(self.players) if p.name == 'player')
+            player_hand = self.format_hand(self.players[player_index].cards)
+        except StopIteration:
+            player_hand = []  # Gestisce il caso in cui non esista un giocatore con il nome 'player'
+
+        dealer_hand = self.format_hand(self.dealer.cards) if self.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
         community_cards = self.format_hand(self.community_cards)
         deck_card = {'value': 'back', 'suit': 'card_back'}
         winner = self.get_winner() if self.phase == Game.SHOWDOWN else None
 
-        blinds_info = {
-            'small_blind': self.players[0].name,
-            'big_blind': self.players[1].name
-        }
+        blinds_info = {}
+        blinds_messages = []
 
-        blinds_messages = [
-            f"{self.players[0].name} posts small blind: {self.small_blind} chips",
-            f"{self.players[1].name} posts big blind: {self.big_blind} chips"
-        ]
+        if len(self.players) > 1:
+            blinds_info = {
+                'small_blind': self.players[0].name,
+                'big_blind': self.players[1].name
+            }
+
+            blinds_messages = [
+                f"{self.players[0].name} posts small blind: {self.small_blind} chips",
+                f"{self.players[1].name} posts big blind: {self.big_blind} chips"
+            ]
 
         return {
             'player_hand': player_hand,
@@ -236,13 +260,15 @@ class Game:
             'winning_hand': self.winning_hand_explanation if self.phase == Game.SHOWDOWN else None,
             'blinds_info': blinds_info,
             'blinds_messages': blinds_messages,
-            'current_turn': self.players[self.turn_manager.current_turn].name
+            'current_turn': self.players[self.turn_manager.current_turn].name,
+            'pot': self.pot,
+            'current_bet': self.current_bet,
+            'players': self.players
         }
-    
-    def format_hand(self, cards):# -> list[dict[str, Any]]:
+
+    def format_hand(self, cards):
         return [{'value': card.value, 'suit': card.suit} for card in cards]
 
-# Example execution if needed
 if __name__ == "__main__":
     game = Game(num_players=4)
     game.setup_players()

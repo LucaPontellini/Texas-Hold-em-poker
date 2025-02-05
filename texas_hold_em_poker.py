@@ -20,19 +20,19 @@ def index():
         return jsonify(response)
 
 def handle_post_request(action, bet_amount):
+    global game
     print(f"Handling action: {action}, bet amount: {bet_amount}")
     if action in ['check', 'call', 'bet', 'raise', 'fold']:
         current_player = game.turn_manager.get_current_player()
-        print(f"Current player: {current_player.name} ({type(current_player).__name__})")  # Debugging
+        print(f"Current player: {current_player.name} ({type(current_player).__name__})")
         message = game.execute_turn(current_player, action, bet_amount)
         print(f"Result of action: {message}")
-
-        if message == 'opponent wins':
-            return {'winner': 'opponent', 'phase': game.phase, 'message': message}
 
         while isinstance(current_player, Bot):
             game.execute_phase()
             current_player = game.turn_manager.get_current_player()
+    else:
+        message = 'Invalid action'
 
     response = game.generate_game_state_response()
     response['message'] = message
@@ -70,6 +70,14 @@ def advance_turn():
     current_player = game.turn_manager.get_current_player()
     if isinstance(current_player, Bot):
         game.execute_phase()
+    response = game.generate_game_state_response()
+    return jsonify(response)
+
+@app.route("/execute-bot-turn", methods=["POST"])
+def execute_bot_turn():
+    global game
+    print("Executing bot turn endpoint called")
+    game.execute_phase()
     response = game.generate_game_state_response()
     return jsonify(response)
 

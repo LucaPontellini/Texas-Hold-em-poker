@@ -1,4 +1,5 @@
 import json
+import os
 import random
 
 # Classe che rappresenta una carta
@@ -17,10 +18,15 @@ class Card:
 
 # Classe che rappresenta un mazzo di carte
 class Deck:
-    def __init__(self, deck_file_path):
-        self.deck_data = self.load_deck(deck_file_path)
-        self.shuffle()  # Mescola le carte
-        self.print_deck()  # Stampa il mazzo per debug
+    def __init__(self, deck_file='deck.json'):
+        deck_path = os.path.join(os.path.dirname(__file__), '..', deck_file)
+        if not os.path.exists(deck_path):
+            print(f"File not found: {deck_path}")
+            self.deck_data = []
+        else:
+            self.deck_data = self.load_deck(deck_path)
+            self.shuffle()  # Mescola le carte
+            self.print_deck()  # Stampa il mazzo per debug
 
     def load_deck(self, deck_file_path):
         try:

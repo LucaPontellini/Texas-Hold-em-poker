@@ -67,22 +67,31 @@ class PokerRules:
     def extract_values(self, hand):
         values = []
         for card in hand:
-            values.append(card.value)
+            if isinstance(card, dict):
+                values.append(card['value'])
+            else:
+                values.append(card.value)
         return values
-
-    def extract_suits(self, hand):
-        suits = []
-        for card in hand:
-            suits.append(card.suit)
-        return suits
-
+    
     def extract_indices(self, hand):
         card_values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
         indices = []
         for card in hand:
-            index = card_values.index(card.value)
+            if isinstance(card, dict):
+                index = card_values.index(card['value'])
+            else:
+                index = card_values.index(card.value)
             indices.append(index)
         return sorted(indices)
+
+    def extract_suits(self, hand):
+        suits = []
+        for card in hand:
+            if isinstance(card, dict):
+                suits.append(card['suit'])
+            else:
+                suits.append(card.suit)
+        return suits
 
     def royal_flush(self, hand):
         # Scala reale (Royal Flush): Scala colore con 10, J, Q, K, A
@@ -142,6 +151,9 @@ class PokerRules:
             if values.count(value) == 2:
                 return True
         return False
+    
+    def high_card(self, hand):
+        return True
 
     def determine_winner(self, player_hand, opponent_hand, community_cards, player_name="Giocatore", opponent_name="Bot1"):
         player_best_hand = self.get_best_hand(player_hand + community_cards)

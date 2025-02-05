@@ -49,12 +49,19 @@ class BettingRound(Enum):
     TURN = 3
     RIVER = 4
 
+# Tipi di Stili di Gioco dei Bot
+class BotType(Enum):
+    AGGRESSIVE = 1
+    CONSERVATIVE = 2
+    BLUFFER = 3
+
 # Classe che rappresenta un bot (giocatore automatico)
 class Bot(Player):
-    def __init__(self, name: str):
+    def __init__(self, name: str, bot_type: BotType):
         super().__init__(name)
         self.poker_rules = PokerRules()
         self.aggressiveness = random.uniform(0.1, 0.9)
+        self.bot_type = bot_type
 
     def make_decision(self, game_state, betting_round: BettingRound):
         hand_strength = self.evaluate_hand(game_state['community_cards'])
@@ -64,36 +71,53 @@ class Bot(Player):
         print(f"Bot {self.name}: hand_strength={hand_strength}, pot_odds={pot_odds}, opponent_behavior={opponent_behavior}, betting_round={betting_round}")
 
         if betting_round == BettingRound.PRE_FLOP:
-            decision = self.pre_flop_decision(hand_strength, pot_odds, opponent_behavior)
+            decision, bet_amount = self.pre_flop_decision(hand_strength, pot_odds, opponent_behavior)
         else:
-            decision = self.post_flop_decision(hand_strength, game_state, pot_odds, opponent_behavior)
+            decision, bet_amount = self.post_flop_decision(hand_strength, game_state, pot_odds, opponent_behavior)
 
-        print(f"Bot {self.name}: decision={decision}")
+        # Ensure bet_amount is valid
+        if decision in ['bet', 'raise'] and bet_amount <= 0:
+            decision = 'fold'  # Fold if bet_amount is invalid for bet or raise
 
-        if decision not in ['fold', 'call', 'raise']:
-            decision = 'fold'
+        print(f"Bot {self.name}: decision={decision}, bet_amount={bet_amount}")
 
-        return decision
+        return decision, bet_amount
 
     def pre_flop_decision(self, hand_strength, pot_odds, opponent_behavior):
-        if hand_strength >= 5 or pot_odds >= 1.5:
-            self.increase_aggressiveness()
-            return "raise"
-        elif hand_strength >= 3 or pot_odds >= 1.0:
-            return "call"
-        else:
-            return "fold"
+        bet_amount = random.randint(10, 100)
+        if self.bot_type == BotType.AGGRESSIVE:
+            if hand_strength >= 3 or pot_odds >= 1.0:
+                self.increase_aggressiveness()
+                return "raise", bet_amount
+            elif random.random() < 0.3:
+                return "bet", bet_amount  # Aggiungi più "bet" nelle decisioni
+        elif self.bot_type == BotType.CONSERVATIVE:
+            if hand_strength >= 5 or pot_odds >= 1.5:
+                return "call", bet_amount
+            elif random.random() < 0.2:
+                return "raise", bet_amount  # Rendi i bot conservatori un po' più aggressivi
+        elif self.bot_type == BotType.BLUFFER:
+            if random.random() < 0.4:  # 40% chance of bluffing
+                return "raise", bet_amount
+        return "fold", bet_amount
 
     def post_flop_decision(self, hand_strength, game_state, pot_odds, opponent_behavior):
-        aggressive_players = self.count_aggressive_players(game_state)
-
-        if hand_strength >= 6 or pot_odds >= 2.0:
-            self.increase_aggressiveness()
-            return "raise"
-        elif hand_strength >= 4 or pot_odds >= 1.5:
-            return "call"
-        else:
-            return "check"
+        bet_amount = random.randint(10, 100)
+        if self.bot_type == BotType.AGGRESSIVE:
+            if hand_strength >= 4 or pot_odds >= 1.5:
+                self.increase_aggressiveness()
+                return "raise", bet_amount
+            elif random.random() < 0.4:
+                return "bet", bet_amount  # Aggiungi più "bet" nelle decisioni
+        elif self.bot_type == BotType.CONSERVATIVE:
+            if hand_strength >= 6 or pot_odds >= 2.0:
+                return "call", bet_amount
+            elif random.random() < 0.3:
+                return "raise", bet_amount  # Rendi i bot conservatori un po' più aggressivi
+        elif self.bot_type == BotType.BLUFFER:
+            if random.random() < 0.5:  # 50% chance of bluffing
+                return "raise", bet_amount
+        return "check", bet_amount
 
     def evaluate_hand(self, community_cards):
         all_cards = self.cards + community_cards
