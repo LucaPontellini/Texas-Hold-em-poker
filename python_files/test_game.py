@@ -59,9 +59,12 @@ def test_game():
 
     # Messaggio che indica l'inizio del gioco
     print(colored("\n===== Inizio del Gioco =====\n", 'green'))
+    
+    max_turns = 100  # Limite massimo ai turni
+    turn_count = 0
 
     while True:
-        while game.phase != Game.SHOWDOWN:
+        while game.phase != Game.SHOWDOWN and turn_count < max_turns:
             current_player = game.turn_manager.get_current_player()
             phase = game.phase.replace('_', '-').lower()  # Converte la fase attuale in un formato utilizzabile
             print(colored("\n" + "=" * 30, phase_colors.get(phase, 'white')))
@@ -98,8 +101,14 @@ def test_game():
                 print(colored(f"Azione del Giocatore: {action}", 'green'))
                 game.execute_turn(current_player, action, bet_amount)
                 game.turn_manager.next_turn()
-                game.check_phase_end()
+                game.check_phase_end()  # Verifica la fine della fase
                 time.sleep(2)  # Pausa di 2 secondi tra i turni
+
+            turn_count += 1  # Incremento del contatore dei turni
+
+        if turn_count >= max_turns:
+            print(colored("\n===== Raggiunto il limite massimo dei turni =====", 'red'))
+            break
 
         # Messaggio che annuncia il vincitore alla fine del gioco
         final_state = game.generate_game_state_response()
@@ -113,6 +122,7 @@ def test_game():
             game = Game(num_players=4)
             game.setup_players()
             print(colored("\n===== Ricomincia una Nuova Partita =====\n", 'green'))
+            turn_count = 0  # Reset del contatore dei turni
         else:
             break
 

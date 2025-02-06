@@ -1,15 +1,16 @@
 import os
 import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'python_files')))
-
 import pytest
 import json
-from python_files.deck import Card, Deck
-from python_files.player import Player, Bot, Dealer, BettingRound
-from python_files.poker_rules import PokerRules
-from python_files.game import TurnManager, Game
-from flask import Flask, request
+from flask import Flask
+
+# Percorso della directory principale del progetto
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from deck import Card, Deck
+from player import Player, Bot, BotType, Dealer, BettingRound
+from poker_rules import PokerRules
+from game import TurnManager, Game
 from texas_hold_em_poker import app, handle_post_request, new_game, start_game, advance_turn
 
 @pytest.fixture
@@ -22,7 +23,7 @@ def sample_player():
 
 @pytest.fixture
 def sample_bot():
-    return Bot("Bot1")
+    return Bot("Bot1", BotType.AGGRESSIVE)
 
 @pytest.fixture
 def sample_dealer():
@@ -54,7 +55,13 @@ def test_deck_loading(sample_deck):
 def test_deck_shuffling(sample_deck):
     original_deck = sample_deck.deck_data.copy()
     sample_deck.shuffle()
-    assert sample_deck.deck_data != original_deck
+    # Controlla che l'ordine del mazzo sia cambiato
+    assert sample_deck.deck_data != original_deck, "The deck order should be different after shuffling"
+    # Controlla che il mazzo mescolato contenga gli stessi elementi
+    assert set(map(repr, sample_deck.deck_data)) == set(map(repr, original_deck)), "The shuffled deck should contain the same cards"
+
+def compare_cards(card):
+    return (card.suit, card.value)
 
 def test_draw_card(sample_deck):
     initial_size = len(sample_deck.deck_data)
@@ -80,7 +87,7 @@ def test_bot_decision(sample_bot):
         'pot': 500,
         'players': [sample_bot]
     }
-    decision = sample_bot.make_decision(game_state, BettingRound.PRE_FLOP)
+    decision, bet_amount = sample_bot.make_decision(game_state, BettingRound.PRE_FLOP)
     assert decision in ['fold', 'call', 'raise']
 
 def test_poker_hand_ranking(sample_poker_rules):
@@ -134,16 +141,11 @@ def test_advance_turn(client):
 
 def test_handle_post_request(client):
     response = client.post('/', data={'action': 'bet', 'betAmount': '10'})
-    data = json.loads(response.data)
     assert response.status_code == 200
+    data = json.loads(response.data)
     assert 'player_hand' in data
     assert 'community_cards' in data
     assert 'message' in data
 
-import sys
-import pytest
-
 if __name__ == "__main__":
-    result = pytest.main(['-v', __file__])
-    if result != 0:
-        sys.exit(result)
+    pytest.main(['-v', __file__])

@@ -123,40 +123,101 @@ class Game:
         self.evaluate_hands()
 
     def execute_turn(self, player, action, bet_amount=0):
-        print(f"Executing turn: {player.name} -> action: {action}, bet amount: {bet_amount}")
-        message = f"{player.name} executes action: {action} with bet amount: {bet_amount}"
-        if action in Game.VALID_ACTIONS:
-            if action == 'fold':
-                message = f"{player.name} folds"
-                self.players.remove(player)
-            elif action == 'bet' and bet_amount > 0:
-                self.pot += player.bet_chips(bet_amount)
-                self.current_bet = bet_amount
-                message = f"{player.name} bets: {bet_amount} chips"
-            elif action == 'raise' and bet_amount > 0:
-                self.pot += player.bet_chips(bet_amount)
-                self.current_bet += bet_amount
-                message = f"{player.name} raises: {bet_amount} chips"
-            elif action == 'call':
-                self.pot += player.bet_chips(self.current_bet)
-                message = f"{player.name} calls: {self.current_bet} chips"
-            elif action == 'check':
-                message = f"{player.name} checks"
-            self.players_actions.append((player.name, action, bet_amount))
+        player_name = player['name'] if isinstance(player, dict) else player.name
+        print(f"Executing turn: {player_name} -> action: {action}, bet amount: {bet_amount}")
+        message = f"{player_name} executes action: {action} with bet amount: {bet_amount}"
 
-            all_cards = self.combine_hands(player.cards)
-            player_hand_strength = self.poker_rules.calculate_hand_ranking(all_cards)
-            print(f"Player {player.name}'s hand strength: {player_hand_strength}")
+        if action in Game.VALID_ACTIONS:
+            player_obj = next((p for p in self.players if p.name == player_name), None)
+            if player_obj:
+                player_obj.set_has_acted()  # Imposta has_acted per il giocatore
+            if action == 'fold':
+                message = f"{player_name} folds"
+                if player_obj:
+                    self.players.remove(player_obj)
+            elif action == 'bet' and bet_amount > 0:
+                if player_obj:
+                    self.pot += player_obj.bet_chips(bet_amount)
+                    self.current_bet = bet_amount
+                    message = f"{player_name} bets: {bet_amount} chips"
+            elif action == 'raise' and bet_amount > 0:
+                if player_obj:
+                    self.pot += player_obj.bet_chips(bet_amount)
+                    self.current_bet += bet_amount
+                    message = f"{player_name} raises: {bet_amount} chips"
+            elif action == 'call':
+                if player_obj:
+                    self.pot += player_obj.bet_chips(self.current_bet)
+                    message = f"{player_name} calls: {self.current_bet} chips"
+            elif action == 'check':
+                message = f"{player_name} checks"
+            self.players_actions.append((player_name, action, bet_amount))
+
+            if player_obj:
+                all_cards = self.combine_hands(player_obj.cards)
+                player_hand_strength = self.poker_rules.calculate_hand_ranking(all_cards)
+                print(f"Player {player_name}'s hand strength: {player_hand_strength}")
 
         self.turn_manager.next_turn()  # Avanza al turno successivo
+        self.check_phase_end()  # Verifica la fine della fase dopo ogni turno
         return message
+
+    def check_phase_end(self):
+        if self.all_players_acted():
+            self.next_phase()
+            for player in self.players:
+                player.reset_has_acted()  # Resetta has_acted per tutti i giocatori
+
+    def all_players_acted(self):
+        return all(player.has_acted for player in self.players)
+
+    def next_phase(self):
+        if self.phase == Game.PRE_FLOP:
+            self.move_to_flop()
+        elif self.phase == Game.FLOP:
+            self.move_to_turn()
+        elif self.phase == Game.TURN:
+            self.move_to_river()
+        elif self.phase == Game.RIVER:
+            self.move_to_showdown()
+        print(f"Next phase: {self.phase}")
+
+    def move_to_flop(self):
+        self.phase = Game.FLOP
+        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
+        self.deal_flop()
+
+    def move_to_turn(self):
+        self.phase = Game.TURN
+        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
+        self.deal_turn_card()
+
+    def move_to_river(self):
+        self.phase = Game.RIVER
+        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
+        self.deal_river_card()
+
+    def move_to_showdown(self):
+        self.phase = Game.SHOWDOWN
+        self.evaluate_hands()
 
     def execute_phase(self):
         current_player = self.turn_manager.get_current_player()
+        if isinstance(current_player, dict):
+            current_player_name = current_player['name']
+        else:
+            current_player_name = current_player.name
+
         if isinstance(current_player, Bot):
             action, bet_amount = current_player.make_decision(self.generate_game_state_response(), self.phase)
-            self.execute_turn(current_player, action, bet_amount)
-        self.turn_manager.next_turn()  # Move to the next turn, whether it's a Bot or a Human
+            self.execute_turn({'name': current_player_name}, action, bet_amount)
+        elif isinstance(current_player, dict):
+            current_player_obj = next((p for p in self.players if p.name == current_player_name), None)
+            if current_player_obj:
+                action, bet_amount = current_player_obj.make_decision(self.generate_game_state_response(), self.phase)
+                self.execute_turn({'name': current_player_name}, action, bet_amount)
+
+        self.turn_manager.next_turn()  # Avanza al turno successivo, sia che sia un Bot o un Umano
 
     def evaluate_hands(self):
         best_hands = {}
@@ -189,17 +250,6 @@ class Game:
     def check_phase_end(self):
         if self.turn_manager.current_turn == 0:  # Avanza la fase dopo il turno del big blind
             self.next_phase()
-
-    def next_phase(self):
-        if self.phase == Game.PRE_FLOP:
-            self.move_to_flop()
-        elif self.phase == Game.FLOP:
-            self.move_to_turn()
-        elif self.phase == Game.TURN:
-            self.move_to_river()
-        elif self.phase == Game.RIVER:
-            self.move_to_showdown()
-        print(f"Next phase: {self.phase}")
 
     def get_winner(self):
         best_hands = {}
@@ -244,11 +294,18 @@ class Game:
                 'small_blind': self.players[0].name,
                 'big_blind': self.players[1].name
             }
-
             blinds_messages = [
                 f"{self.players[0].name} posts small blind: {self.small_blind} chips",
                 f"{self.players[1].name} posts big blind: {self.big_blind} chips"
             ]
+
+        players_info = [
+            {
+                'name': player.name,
+                'chips': player.chips,
+                'aggressiveness': getattr(player, 'aggressiveness', None)
+            } for player in self.players
+        ]
 
         return {
             'player_hand': player_hand,
@@ -263,7 +320,7 @@ class Game:
             'current_turn': self.players[self.turn_manager.current_turn].name,
             'pot': self.pot,
             'current_bet': self.current_bet,
-            'players': self.players
+            'players': players_info  # Solo serializzare le informazioni necessarie
         }
 
     def format_hand(self, cards):

@@ -10,6 +10,7 @@ class Player:
         self.cards = []
         self.aggressiveness = 0
         self.chips = 1000000000  # Ogni giocatore parte con 1000000000 fiches
+        self.has_acted = False
 
     def add_card(self, card: Card):
         if card not in self.cards:
@@ -36,6 +37,12 @@ class Player:
 
     def add_chips(self, amount):
         self.chips += amount
+
+    def reset_has_acted(self):
+        self.has_acted = False
+
+    def set_has_acted(self):
+        self.has_acted = True
 
 # Classe che rappresenta un dealer
 class Dealer(Player):
@@ -156,7 +163,8 @@ class Bot(Player):
     def analyze_opponent_behavior(self, game_state):
         behavior_score = 0
         for player in game_state['players']:
-            if player.aggressiveness > 0:
+            aggressiveness = player['aggressiveness'] if isinstance(player, dict) else player.aggressiveness
+            if aggressiveness > 0:
                 behavior_score += 1
         return behavior_score
 

@@ -37,7 +37,7 @@ def handle_post_request(action, bet_amount):
     response = game.generate_game_state_response()
     response['message'] = message
     print(f"Response data: {response}")
-    return response
+    return response  # Return as a JSON-serializable dictionary
 
 @app.route("/new-game", methods=["POST"])
 def new_game():
@@ -68,7 +68,7 @@ def advance_turn():
     print("Advance turn endpoint called")
     game.turn_manager.next_turn()
     current_player = game.turn_manager.get_current_player()
-    if isinstance(current_player, Bot):
+    if isinstance(current_player, Bot) or isinstance(current_player, dict):
         game.execute_phase()
     response = game.generate_game_state_response()
     return jsonify(response)
