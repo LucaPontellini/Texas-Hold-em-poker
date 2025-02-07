@@ -17,7 +17,7 @@ class TurnManager:
 
     def next_turn(self):
         self.current_turn = (self.current_turn + 1) % len(self.players)
-        print(f"It's {self.players[self.current_turn].name}'s turn")
+        print(f"Advancing to the next turn: {self.players[self.current_turn].name}'s turn")
         return self.get_current_player()
 
     def get_current_player(self):
@@ -106,32 +106,36 @@ class Game:
     def deal_flop(self):
         self.community_cards = self.deck[:3]
         self.deck = self.deck[3:]
+        print("Dealt Flop: ", self.community_cards)  # Log di debug per le carte comuni
 
     def move_to_turn(self):
         self.phase = Game.TURN
         self.turn_manager.current_turn = self.turn_manager.find_big_blind()
         self.deal_turn_card()
+        print("Moving to the Turn phase")  # Log di debug per monitorare il passaggio di fase
 
     def deal_turn_card(self):
         self.community_cards.append(self.deck.pop(0))
+        print("Dealt Turn Card: ", self.community_cards[-1])  # Log di debug per la quarta carta comune
 
     def move_to_river(self):
         self.phase = Game.RIVER
         self.turn_manager.current_turn = self.turn_manager.find_big_blind()
         self.deal_river_card()
+        print("Moving to the River phase")  # Log di debug per monitorare il passaggio di fase
 
     def deal_river_card(self):
         self.community_cards.append(self.deck.pop(0))
+        print("Dealt River Card: ", self.community_cards[-1])  # Log di debug per la quinta carta comune
 
     def move_to_showdown(self):
         self.phase = Game.SHOWDOWN
         self.evaluate_hands()
+        print("Moving to the Showdown phase")  # Log di debug per monitorare il passaggio di fase
 
     def execute_turn(self, player, action, bet_amount=0):
-        # Promemoria di etichetta
         print("Remember to maintain respectful behavior and not to talk during the hands.")
 
-        # Verifica se l'azione è non consentita
         if action == 'string bet' or action == 'angle shooting' or action == 'collusion':
             print(f"Invalid action: {action} by {player['name']}")
             return
@@ -143,7 +147,7 @@ class Game:
         if action in Game.VALID_ACTIONS:
             player_obj = next((p for p in self.players if p.name == player_name), None)
             if player_obj:
-                player_obj.set_has_acted()  # Imposta has_acted per il giocatore
+                player_obj.set_has_acted()
             if action == 'fold':
                 message = f"{player_name} folds"
                 if player_obj:
@@ -171,8 +175,10 @@ class Game:
                 player_hand_strength = self.poker_rules.calculate_hand_ranking(all_cards)
                 print(f"Player {player_name}'s hand strength: {player_hand_strength}")
 
+        print(f"Turn completed: {player_name} -> action: {action}, pot: {self.pot}, current_bet: {self.current_bet}")
+        self.check_phase_end()  # Verifica la fine della fase subito dopo il completamento del turno
         self.turn_manager.next_turn()  # Avanza al turno successivo
-        self.check_phase_end()  # Verifica la fine della fase dopo ogni turno
+        print(f"New turn: {self.turn_manager.current_turn}")
         return message
 
     def evaluate_hands(self):
@@ -204,13 +210,16 @@ class Game:
         print(winner)
 
     def check_phase_end(self):
+        print("Checking if all players have acted:")
+        for player in self.players:
+            print(f"Player {player.name} has_acted: {player.has_acted}")
+            
         if self.all_players_acted():
+            print("All players have acted. Moving to the next phase.")
             self.next_phase()
             for player in self.players:
                 player.reset_has_acted()  # Resetta has_acted per tutti i giocatori
-
-    def all_players_acted(self):
-        return all(player.has_acted for player in self.players)
+            print("All players have been reset to has_acted: False")
 
     def next_phase(self):
         if self.phase == Game.PRE_FLOP:
@@ -222,6 +231,13 @@ class Game:
         elif self.phase == Game.RIVER:
             self.move_to_showdown()
         print(f"Next phase: {self.phase}")
+
+    def all_players_acted(self):
+        result = all(player.has_acted for player in self.players)
+        print(f"all_players_acted: {result} (Players: {[player.name for player in self.players]})")  # Log di debug
+        for player in self.players:
+            print(f"{player.name} has_acted: {player.has_acted}")
+        return result
 
     def execute_phase(self):
         current_player = self.turn_manager.get_current_player()

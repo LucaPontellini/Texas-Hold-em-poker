@@ -43,6 +43,7 @@ class Player:
 
     def set_has_acted(self):
         self.has_acted = True
+        print(f"{self.name} has set has_acted to True")  # Log di debug
 
 # Classe che rappresenta un dealer
 class Dealer(Player):
@@ -124,7 +125,7 @@ class Bot(Player):
         elif self.bot_type == BotType.BLUFFER:
             if random.random() < 0.5:  # 50% chance of bluffing
                 return "raise", bet_amount
-        return "check", bet_amount
+        return "check", 0  # Imposta bet_amount a 0 per check
 
     def evaluate_hand(self, community_cards):
         all_cards = self.cards + community_cards
