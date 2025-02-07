@@ -1,46 +1,11 @@
 from itertools import combinations
 from deck import Card
 
-#Regole del Texas Hold'em Poker:
-
-## 1. Setup del Gioco:
-#- Ogni giocatore riceve due carte coperte (hole cards).
-#- Cinque carte comuni vengono distribuite sul tavolo in tre fasi: il flop (tre carte), il turn (una carta) e il river (una carta).
-
-## 2. Turni di Puntata:
-#- **Pre-Flop**: I giocatori ricevono le loro due carte coperte e iniziano il primo turno di puntata.
-#- **Flop**: Vengono distribuite tre carte comuni sul tavolo, seguite da un secondo turno di puntata.
-#- **Turn**: Viene distribuita una quarta carta comune, seguita da un terzo turno di puntata.
-#- **River**: Viene distribuita una quinta carta comune, seguita dall'ultimo turno di puntata.
-
-## 3. Azioni di Puntata:
-#- **Check**: Passare il turno senza scommettere.
-#- **Bet**: Scommettere una certa quantità di chip.
-#- **Call**: Pareggiare la scommessa di un altro giocatore.
-#- **Raise**: Aumentare la scommessa.
-#- **Fold**: Abbandonare la mano.
-
-## 4. Valutazione delle Mani:
-#- **Coppia**: Due carte dello stesso valore.
-#- **Doppia Coppia**: Due coppie di carte.
-#- **Tris**: Tre carte dello stesso valore.
-#- **Scala**: Cinque carte consecutive (ad esempio, 2-3-4-5-6).
-#- **Colore**: Cinque carte dello stesso seme.
-#- **Full**: Una coppia più un tris.
-#- **Poker**: Quattro carte dello stesso valore.
-#- **Scala Colore**: Scala dello stesso seme.
-#- **Scala Reale**: Scala dall'asso al dieci dello stesso seme.
-
-## 5. Showdown:
-#- Dopo l'ultimo turno di puntata, i giocatori rimanenti mostrano le loro carte.
-#- Il giocatore con la migliore mano di cinque carte vince il piatto.
-
-
 class PokerRules:
     def __init__(self):
         self.hand_rankings = self.define_hand_rankings()
 
-    # Punti delle Mani nel Texas Hold'em Poker:
+    # Hand rankings in Texas Hold'em Poker
     def define_hand_rankings(self):
         return {
             'royal_flush': 10,  # Scala reale (Royal Flush)
@@ -55,14 +20,11 @@ class PokerRules:
             'high_card': 1  # Carta alta (High Card)
         }
 
+    # Distribuisce le hole cards e le community cards
     def distribute_cards(self, deck, num_players=2):
-        hands = []
-        for i in range(num_players):
-            start_index = i * 2
-            end_index = (i + 1) * 2
-            hand = deck[start_index:end_index]
-            hands.append(hand)
-        return hands
+        hands = [deck[i*2:(i+1)*2] for i in range(num_players)]
+        community_cards = deck[num_players*2:num_players*2+5]
+        return hands, community_cards
 
     def extract_values(self, hand):
         values = []
@@ -72,7 +34,7 @@ class PokerRules:
             else:
                 values.append(card.value)
         return values
-    
+
     def extract_indices(self, hand):
         card_values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
         indices = []
@@ -105,10 +67,7 @@ class PokerRules:
     def four_of_a_kind(self, hand):
         # Poker (Four of a Kind): Quattro carte dello stesso valore
         values = self.extract_values(hand)
-        for value in values:
-            if values.count(value) == 4:
-                return True
-        return False
+        return any(values.count(value) == 4 for value in values)
 
     def full_house(self, hand):
         # Full (Full House): Tris e Coppia
@@ -130,29 +89,21 @@ class PokerRules:
     def three_of_a_kind(self, hand):
         # Tris (Three of a Kind): Tre carte dello stesso valore
         values = self.extract_values(hand)
-        for value in values:
-            if values.count(value) == 3:
-                return True
-        return False
+        return any(values.count(value) == 3 for value in values)
 
     def two_pairs(self, hand):
         # Doppia coppia (Two Pairs): Due coppie di carte dello stesso valore
         values = self.extract_values(hand)
-        pairs = []
-        for value in set(values):
-            if values.count(value) == 2:
-                pairs.append(value)
+        pairs = [value for value in set(values) if values.count(value) == 2]
         return len(pairs) == 2
 
     def pair(self, hand):
         # Coppia (Pair): Due carte dello stesso valore
         values = self.extract_values(hand)
-        for value in values:
-            if values.count(value) == 2:
-                return True
-        return False
+        return any(values.count(value) == 2 for value in values)
     
     def high_card(self, hand):
+        # Carta alta (High Card): Nessuna delle combinazioni sopra
         return True
 
     def determine_winner(self, player_hand, opponent_hand, community_cards, player_name="Giocatore", opponent_name="Bot1"):
@@ -175,7 +126,6 @@ class PokerRules:
     def get_best_hand(self, cards):
         best_hand = None
         highest_ranking = 0
-
         all_combinations = list(combinations(cards, 5))
 
         for hand in all_combinations:

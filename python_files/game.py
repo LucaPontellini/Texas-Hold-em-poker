@@ -17,7 +17,7 @@ class TurnManager:
 
     def next_turn(self):
         self.current_turn = (self.current_turn + 1) % len(self.players)
-        print(f"È il turno di {self.players[self.current_turn].name}")
+        print(f"It's {self.players[self.current_turn].name}'s turn")
         return self.get_current_player()
 
     def get_current_player(self):
@@ -78,6 +78,7 @@ class Game:
         print(f"Deck after dealing hole cards: {len(self.deck)}")  # Debugging
 
     def post_blinds(self):
+        self.rotate_blinds()
         small_blind_player = self.players[0]
         big_blind_player = self.players[1]
         small_blind_player.name = 'small_blind'
@@ -86,6 +87,9 @@ class Game:
         self.pot += big_blind_player.bet_chips(self.big_blind)
         print(f"{small_blind_player.name} posts small blind: {self.small_blind} chips")
         print(f"{big_blind_player.name} posts big blind: {self.big_blind} chips")
+
+    def rotate_blinds(self):
+        self.players.append(self.players.pop(0))
 
     def deal_hole_cards(self):
         for player in self.players:
@@ -97,6 +101,7 @@ class Game:
         self.phase = Game.FLOP
         self.turn_manager.current_turn = self.turn_manager.find_big_blind()
         self.deal_flop()
+        print("Moving to the Flop phase")  # Log di debug per monitorare il passaggio di fase
 
     def deal_flop(self):
         self.community_cards = self.deck[:3]
@@ -123,6 +128,14 @@ class Game:
         self.evaluate_hands()
 
     def execute_turn(self, player, action, bet_amount=0):
+        # Promemoria di etichetta
+        print("Remember to maintain respectful behavior and not to talk during the hands.")
+
+        # Verifica se l'azione è non consentita
+        if action == 'string bet' or action == 'angle shooting' or action == 'collusion':
+            print(f"Invalid action: {action} by {player['name']}")
+            return
+
         player_name = player['name'] if isinstance(player, dict) else player.name
         print(f"Executing turn: {player_name} -> action: {action}, bet amount: {bet_amount}")
         message = f"{player_name} executes action: {action} with bet amount: {bet_amount}"
@@ -162,63 +175,6 @@ class Game:
         self.check_phase_end()  # Verifica la fine della fase dopo ogni turno
         return message
 
-    def check_phase_end(self):
-        if self.all_players_acted():
-            self.next_phase()
-            for player in self.players:
-                player.reset_has_acted()  # Resetta has_acted per tutti i giocatori
-
-    def all_players_acted(self):
-        return all(player.has_acted for player in self.players)
-
-    def next_phase(self):
-        if self.phase == Game.PRE_FLOP:
-            self.move_to_flop()
-        elif self.phase == Game.FLOP:
-            self.move_to_turn()
-        elif self.phase == Game.TURN:
-            self.move_to_river()
-        elif self.phase == Game.RIVER:
-            self.move_to_showdown()
-        print(f"Next phase: {self.phase}")
-
-    def move_to_flop(self):
-        self.phase = Game.FLOP
-        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
-        self.deal_flop()
-
-    def move_to_turn(self):
-        self.phase = Game.TURN
-        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
-        self.deal_turn_card()
-
-    def move_to_river(self):
-        self.phase = Game.RIVER
-        self.turn_manager.current_turn = self.turn_manager.find_big_blind()
-        self.deal_river_card()
-
-    def move_to_showdown(self):
-        self.phase = Game.SHOWDOWN
-        self.evaluate_hands()
-
-    def execute_phase(self):
-        current_player = self.turn_manager.get_current_player()
-        if isinstance(current_player, dict):
-            current_player_name = current_player['name']
-        else:
-            current_player_name = current_player.name
-
-        if isinstance(current_player, Bot):
-            action, bet_amount = current_player.make_decision(self.generate_game_state_response(), self.phase)
-            self.execute_turn({'name': current_player_name}, action, bet_amount)
-        elif isinstance(current_player, dict):
-            current_player_obj = next((p for p in self.players if p.name == current_player_name), None)
-            if current_player_obj:
-                action, bet_amount = current_player_obj.make_decision(self.generate_game_state_response(), self.phase)
-                self.execute_turn({'name': current_player_name}, action, bet_amount)
-
-        self.turn_manager.next_turn()  # Avanza al turno successivo, sia che sia un Bot o un Umano
-
     def evaluate_hands(self):
         best_hands = {}
         for player in self.players:
@@ -248,8 +204,42 @@ class Game:
         print(winner)
 
     def check_phase_end(self):
-        if self.turn_manager.current_turn == 0:  # Avanza la fase dopo il turno del big blind
+        if self.all_players_acted():
             self.next_phase()
+            for player in self.players:
+                player.reset_has_acted()  # Resetta has_acted per tutti i giocatori
+
+    def all_players_acted(self):
+        return all(player.has_acted for player in self.players)
+
+    def next_phase(self):
+        if self.phase == Game.PRE_FLOP:
+            self.move_to_flop()
+        elif self.phase == Game.FLOP:
+            self.move_to_turn()
+        elif self.phase == Game.TURN:
+            self.move_to_river()
+        elif self.phase == Game.RIVER:
+            self.move_to_showdown()
+        print(f"Next phase: {self.phase}")
+
+    def execute_phase(self):
+        current_player = self.turn_manager.get_current_player()
+        if isinstance(current_player, dict):
+            current_player_name = current_player['name']
+        else:
+            current_player_name = current_player.name
+
+        if isinstance(current_player, Bot):
+            action, bet_amount = current_player.make_decision(self.generate_game_state_response(), self.phase)
+            self.execute_turn({'name': current_player_name}, action, bet_amount)
+        elif isinstance(current_player, dict):
+            current_player_obj = next((p for p in self.players if p.name == current_player_name), None)
+            if current_player_obj:
+                action, bet_amount = current_player_obj.make_decision(self.generate_game_state_response(), self.phase)
+                self.execute_turn({'name': current_player_name}, action, bet_amount)
+
+        self.turn_manager.next_turn()  # Avanza al turno successivo, sia che sia un Bot o un Umano
 
     def get_winner(self):
         best_hands = {}
@@ -320,7 +310,7 @@ class Game:
             'current_turn': self.players[self.turn_manager.current_turn].name,
             'pot': self.pot,
             'current_bet': self.current_bet,
-            'players': players_info  # Solo serializzare le informazioni necessarie
+            'players': players_info
         }
 
     def format_hand(self, cards):
