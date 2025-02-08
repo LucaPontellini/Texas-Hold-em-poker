@@ -3,9 +3,10 @@ import os
 import time
 from termcolor import colored
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
+# Aggiungi il percorso principale del progetto
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from game import Game, Bot, Player, Dealer, BettingRound
+from python_files.game import Game, Bot, Player, Dealer, BettingRound
 
 # Colori per i giocatori e le fasi di gioco
 player_colors = {

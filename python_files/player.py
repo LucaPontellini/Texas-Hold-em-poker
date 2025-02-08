@@ -1,6 +1,6 @@
 import random
-from deck import Card
-from poker_rules import PokerRules
+from .deck import Card
+from .poker_rules import PokerRules
 from enum import Enum
 
 # Classe che rappresenta un giocatore
@@ -40,6 +40,7 @@ class Player:
 
     def reset_has_acted(self):
         self.has_acted = False
+        print(f"{self.name} has_acted reset to {self.has_acted}")  # Aggiungi questo log di debug
 
     def set_has_acted(self):
         self.has_acted = True

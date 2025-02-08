@@ -7,10 +7,10 @@ from flask import Flask
 # Percorso della directory principale del progetto
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from deck import Card, Deck
-from player import Player, Bot, BotType, Dealer, BettingRound
-from poker_rules import PokerRules
-from game import TurnManager, Game
+from python_files.deck import Card, Deck
+from python_files.player import Player, Bot, BotType, Dealer, BettingRound
+from python_files.poker_rules import PokerRules
+from python_files.game import TurnManager, Game
 from texas_hold_em_poker import app, handle_post_request, new_game, start_game, advance_turn
 
 @pytest.fixture
@@ -148,4 +148,4 @@ def test_handle_post_request(client):
     assert 'message' in data
 
 if __name__ == "__main__":
-    pytest.main(['-v', __file__])
+    pytest.main()

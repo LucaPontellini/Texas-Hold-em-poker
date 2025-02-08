@@ -1,5 +1,5 @@
 from itertools import combinations
-from deck import Card
+from .deck import Card
 
 class PokerRules:
     def __init__(self):

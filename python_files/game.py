@@ -1,8 +1,8 @@
 import random
 from flask import request
-from player import BotType, Player, Dealer, Bot, BettingRound
-from deck import Deck, Card
-from poker_rules import PokerRules
+from .player import BotType, Player, Dealer, Bot, BettingRound
+from .deck import Deck, Card
+from .poker_rules import PokerRules
 
 class TurnManager:
     def __init__(self, players):
@@ -213,10 +213,10 @@ class Game:
         print("Checking if all players have acted:")
         for player in self.players:
             print(f"Player {player.name} has_acted: {player.has_acted}")
-            
+
         if self.all_players_acted():
             print("All players have acted. Moving to the next phase.")
-            self.next_phase()
+            self.next_phase()  # Avanza alla fase successiva
             for player in self.players:
                 player.reset_has_acted()  # Resetta has_acted per tutti i giocatori
             print("All players have been reset to has_acted: False")
@@ -230,6 +230,11 @@ class Game:
             self.move_to_river()
         elif self.phase == Game.RIVER:
             self.move_to_showdown()
+    
+        # Reset dello stato has_acted di tutti i giocatori dopo ogni fase
+        for player in self.players:
+            player.reset_has_acted()
+    
         print(f"Next phase: {self.phase}")
 
     def all_players_acted(self):
