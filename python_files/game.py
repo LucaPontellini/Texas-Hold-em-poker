@@ -149,26 +149,39 @@ class Game:
             player_obj = next((p for p in self.players if p.name == player_name), None)
             if player_obj:
                 player_obj.set_has_acted()
+
+            # Implementazione del Fold
             if action == 'fold':
                 message = f"{player_name} folds"
                 if player_obj:
                     self.players.remove(player_obj)
+
+            # Implementazione del Bet
             elif action == 'bet' and bet_amount > 0:
                 if player_obj:
                     self.pot += player_obj.bet_chips(bet_amount)
                     self.current_bet = bet_amount
                     message = f"{player_name} bets: {bet_amount} chips"
+
+            # Implementazione del Raise
             elif action == 'raise' and bet_amount > 0:
                 if player_obj:
-                    self.pot += player_obj.bet_chips(bet_amount)
-                    self.current_bet += bet_amount
-                    message = f"{player_name} raises: {bet_amount} chips"
+                    raise_amount = bet_amount - self.current_bet
+                    self.pot += player_obj.bet_chips(raise_amount)
+                    self.current_bet += raise_amount
+                    message = f"{player_name} raises: {raise_amount} chips"
+
+            # Implementazione del Call
             elif action == 'call':
                 if player_obj:
-                    self.pot += player_obj.bet_chips(self.current_bet)
+                    self.pot += player_obj.bet_chips(self.current_bet - player_obj.current_bet)
+                    player_obj.current_bet = self.current_bet
                     message = f"{player_name} calls: {self.current_bet} chips"
+
+            # Implementazione del Check
             elif action == 'check':
                 message = f"{player_name} checks"
+
             self.players_actions.append((player_name, action, bet_amount))
 
             if player_obj:
@@ -313,15 +326,15 @@ class Game:
             player_hand = self.format_hand(self.players[player_index].cards)
         except StopIteration:
             player_hand = []  # Gestisce il caso in cui non esista un giocatore con il nome 'player'
-    
+
         dealer_hand = self.format_hand(self.dealer.cards) if self.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
         community_cards = self.format_hand(self.community_cards)
         deck_card = {'value': 'back', 'suit': 'card_back'}
         winner = self.get_winner() if self.phase == Game.SHOWDOWN else None
-    
+
         blinds_info = {}
         blinds_messages = []
-    
+
         if len(self.players) > 1:
             blinds_info = {
                 'small_blind': self.players[0].name,
@@ -331,7 +344,7 @@ class Game:
                 f"{self.players[0].name} posts small blind: {self.small_blind} chips",
                 f"{self.players[1].name} posts big blind: {self.big_blind} chips"
             ]
-    
+
         players_info = [
             {
                 'name': player.name,
@@ -339,7 +352,7 @@ class Game:
                 'aggressiveness': getattr(player, 'aggressiveness', None)
             } for player in self.players
         ]
-    
+
         return {
             'player_hand': player_hand,
             'dealer_hand': dealer_hand,
@@ -355,7 +368,7 @@ class Game:
             'current_bet': self.current_bet,
             'players': players_info
         }
-    
+
     def format_hand(self, cards):
         return [{'value': card.value, 'suit': card.suit} for card in cards]
 

@@ -11,6 +11,7 @@ class Player:
         self.aggressiveness = 0
         self.chips = 1000000000  # Ogni giocatore parte con 1000000000 fiches
         self.has_acted = False
+        self.current_bet = 0
 
     def add_card(self, card: Card):
         if card not in self.cards:
@@ -29,6 +30,7 @@ class Player:
     def bet_chips(self, amount):
         if amount <= self.chips:
             self.chips -= amount
+            self.current_bet += amount  # Tiene traccia della scommessa corrente
             return amount
         return 0
 
@@ -40,7 +42,7 @@ class Player:
 
     def reset_has_acted(self):
         self.has_acted = False
-        print(f"{self.name} has_acted reset to {self.has_acted}")  # Aggiungi questo log di debug
+        print(f"{self.name} has_acted reset to {self.has_acted}")  # Log di debug
 
     def set_has_acted(self):
         self.has_acted = True
@@ -71,6 +73,7 @@ class Bot(Player):
         self.poker_rules = PokerRules()
         self.aggressiveness = random.uniform(0.1, 0.9)
         self.bot_type = bot_type
+        self.current_bet = 0
 
     def make_decision(self, game_state, betting_round: BettingRound):
         hand_strength = self.evaluate_hand(game_state['community_cards'])
@@ -84,9 +87,8 @@ class Bot(Player):
         else:
             decision, bet_amount = self.post_flop_decision(hand_strength, game_state, pot_odds, opponent_behavior)
 
-        # Ensure bet_amount is valid
         if decision in ['bet', 'raise'] and bet_amount <= 0:
-            decision = 'fold'  # Fold if bet_amount is invalid for bet or raise
+            decision = 'fold'  # Folda se bet_amount non è valido per puntata o rilancio
 
         print(f"Bot {self.name}: decision={decision}, bet_amount={bet_amount}")
 
@@ -99,14 +101,14 @@ class Bot(Player):
                 self.increase_aggressiveness()
                 return "raise", bet_amount
             elif random.random() < 0.3:
-                return "bet", bet_amount  # Aggiungi più "bet" nelle decisioni
+                return "bet", bet_amount  # Aggiunge più "bet" nelle decisioni
         elif self.bot_type == BotType.CONSERVATIVE:
             if hand_strength >= 5 or pot_odds >= 1.5:
                 return "call", bet_amount
             elif random.random() < 0.2:
-                return "raise", bet_amount  # Rendi i bot conservatori un po' più aggressivi
+                return "raise", bet_amount  # Rende i bot conservatori un po' più aggressivi
         elif self.bot_type == BotType.BLUFFER:
-            if random.random() < 0.4:  # 40% chance of bluffing
+            if random.random() < 0.4:  # 40% chance di bluffing
                 return "raise", bet_amount
         return "fold", bet_amount
 
@@ -117,14 +119,14 @@ class Bot(Player):
                 self.increase_aggressiveness()
                 return "raise", bet_amount
             elif random.random() < 0.4:
-                return "bet", bet_amount  # Aggiungi più "bet" nelle decisioni
+                return "bet", bet_amount  # Aggiunge più "bet" nelle decisioni
         elif self.bot_type == BotType.CONSERVATIVE:
             if hand_strength >= 6 or pot_odds >= 2.0:
                 return "call", bet_amount
             elif random.random() < 0.3:
-                return "raise", bet_amount  # Rendi i bot conservatori un po' più aggressivi
+                return "raise", bet_amount  # Rende i bot conservatori un po' più aggressivi
         elif self.bot_type == BotType.BLUFFER:
-            if random.random() < 0.5:  # 50% chance of bluffing
+            if random.random() < 0.5:  # 50% chance di bluffing
                 return "raise", bet_amount
         return "check", 0  # Imposta bet_amount a 0 per check
 
