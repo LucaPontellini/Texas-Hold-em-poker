@@ -1,7 +1,7 @@
 # Regole del Texas Hold'em Poker
 
 ## 1. Setup del Gioco
-Nel Texas Hold'em Poker, ogni giocatore riceve due carte coperte, conosciute come "hole cards". Successivamente, cinque carte comuni vengono distribuite sul tavolo in tre fasi: il flop (tre carte), il turn (una carta) e il river (una carta). L'obiettivo è creare la migliore combinazione possibile di cinque carte utilizzando le hole cards e le carte comuni.
+Nel Texas Hold'em Poker, ogni giocatore riceve due carte coperte, conosciute come "hole cards". Successivamente, cinque carte comuni vengono distribuite sul tavolo in tre fasi: il flop (tre carte), il turn (una carta) e il river (una carta). L'obiettivo è creare la migliore combinazione possibile di cinque carte utilizzando le hole cards e le carte comuni. Il numero di giocatori al tavolo può variare da 2 a 10, ma nei casinò è comune vedere tavoli con 9 o 10 giocatori.
 
 ## 2. Posizioni a Tavola
 - **Dealer (Button)**: Il giocatore con il disco del dealer, ma il dealer non ruota poiché è una persona fissa.

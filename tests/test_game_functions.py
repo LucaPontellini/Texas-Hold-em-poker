@@ -1,6 +1,6 @@
 import unittest
 from python_files.deck import Card, Deck
-from python_files.player import Player, Bot, BotType, Dealer, BettingRound
+from python_files.players import Player, Bot, BotType, Dealer, BettingRound
 from python_files.poker_rules import PokerRules
 from python_files.game import TurnManager, Game
 

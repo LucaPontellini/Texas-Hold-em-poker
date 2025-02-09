@@ -8,7 +8,7 @@ from flask import Flask
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from python_files.deck import Card, Deck
-from python_files.player import Player, Bot, BotType, Dealer, BettingRound
+from python_files.players import Player, Bot, BotType, Dealer, BettingRound
 from python_files.poker_rules import PokerRules
 from python_files.game import TurnManager, Game
 from texas_hold_em_poker import app, handle_post_request, new_game, start_game, advance_turn

@@ -3,7 +3,7 @@ import os
 import time
 from termcolor import colored
 
-# Aggiungi il percorso principale del progetto
+# Percorso principale del progetto
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from python_files.game import Game, Bot, Player, Dealer, BettingRound
@@ -55,7 +55,7 @@ def display_pot(game):
     print(colored(f"\nPiatto corrente: {game.pot} fiches", 'green'))
 
 def test_game():
-    game = Game(num_players=4)
+    game = Game()
     game.setup_players()
 
     print(colored("\n===== Inizio del Gioco =====\n", 'green'))
@@ -120,7 +120,7 @@ def test_game():
 
         restart = input("Vuoi ricominciare la partita? (sì/no): ").lower()
         if restart == 'sì':
-            game = Game(num_players=4)
+            game = Game()
             game.setup_players()
             print(colored("\n===== Ricomincia una Nuova Partita =====\n", 'green'))
             turn_count = 0
