@@ -103,7 +103,9 @@ def test_game():
                 print(colored(f"Azione del Giocatore: {action}", 'green'))
                 game.execute_turn(current_player, action, bet_amount)
                 
-            game.check_phase_end()
+            if game.phase == Game.SHOWDOWN:  # Controlla se il gioco è finito
+                break
+
             game.turn_manager.next_turn()  # Avanza al turno successivo
             time.sleep(2)
 
