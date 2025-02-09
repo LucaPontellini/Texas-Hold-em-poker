@@ -304,12 +304,16 @@ function newGame() {
 
 // Funzione per avviare il gioco
 function startGame() {
+    console.log('Invio richiesta POST a /start-game');
     fetch('/start-game', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams()
     })
-    .then(response => response.json())
+    .then(response => {
+        console.log('Risposta ricevuta:', response);
+        return response.json();
+    })
     .then(data => {
         console.log("Partita avviata:", data);
         displayHand(data.player_hand, 'player-hand');

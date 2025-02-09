@@ -1,11 +1,18 @@
 import os
 import sys
+import logging
 from flask import Flask, render_template, request, jsonify
+import atexit
 
+# Configurazione del logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Importazione dei moduli di gioco
 sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))
-
 from python_files.game import Game, Bot
 
+# Definizione di Flask
 app = Flask(__name__, static_url_path="/static")
 game = None
 
@@ -14,19 +21,23 @@ def index():
     if request.method == "GET":
         return render_template("game.html")
     elif request.method == "POST":
-        action = request.form.get("action")
-        bet_amount = int(request.form.get("betAmount", 0))
-        response = handle_post_request(action, bet_amount)
-        return jsonify(response)
+        try:
+            action = request.form.get("action")
+            bet_amount = int(request.form.get("betAmount", 0))
+            response = handle_post_request(action, bet_amount)
+            return jsonify(response)
+        except Exception as e:
+            logger.error(f"Error handling post request: {e}")
+            return jsonify({'error': str(e)}), 500
 
 def handle_post_request(action, bet_amount):
     global game
-    print(f"Handling action: {action}, bet amount: {bet_amount}")
+    logger.info(f"Handling action: {action}, bet amount: {bet_amount}")
     if action in ['check', 'call', 'bet', 'raise', 'fold']:
         current_player = game.turn_manager.get_current_player()
-        print(f"Current player: {current_player.name} ({type(current_player).__name__})")
+        logger.info(f"Current player: {current_player.name} ({type(current_player).__name__})")
         message = game.execute_turn(current_player, action, bet_amount)
-        print(f"Result of action: {message}")
+        logger.info(f"Result of action: {message}")
 
         while isinstance(current_player, Bot):
             game.execute_phase()
@@ -36,8 +47,8 @@ def handle_post_request(action, bet_amount):
 
     response = game.generate_game_state_response()
     response['message'] = message
-    print(f"Response data: {response}")
-    return response  # Restituisce un dizionario JSON-serializzabile
+    logger.info(f"Response data: {response}")
+    return response
 
 @app.route("/new-game", methods=["POST"])
 def new_game():
@@ -51,17 +62,19 @@ def new_game():
 def start_game():
     global game
     try:
+        game = Game()
+        game.setup_players()
         game.start_game()
         response = game.generate_game_state_response()
         return jsonify(response)
     except Exception as e:
-        print(f"Errore durante l'avvio del gioco: {e}")
+        logger.error(f"Errore durante l'avvio del gioco: {e}")
         return jsonify({'error': str(e)}), 500
-    
+
 @app.route("/advance-turn", methods=["POST"])
 def advance_turn():
     global game
-    print("Chiamata dell'endpoint advance-turn")
+    logger.info("Chiamata dell'endpoint advance-turn")
     game.turn_manager.next_turn()
     if game.check_phase_end():
         game.next_phase()
@@ -71,7 +84,7 @@ def advance_turn():
 @app.route("/execute-bot-turn", methods=["POST"])
 def execute_bot_turn():
     global game
-    print("Chiamata dell'endpoint execute-bot-turn")
+    logger.info("Chiamata dell'endpoint execute-bot-turn")
     game.execute_phase()
     response = game.generate_game_state_response()
     return jsonify(response)
@@ -79,6 +92,13 @@ def execute_bot_turn():
 @app.route("/home_poker", methods=["GET"])
 def home_poker():
     return render_template("home_poker.html")
+
+def clean_up():
+    logger.info("Cleaning up before shutdown...")
+    # Esegui eventuali operazioni di chiusura necessarie
+
+# Registra la funzione clean_up per essere chiamata alla chiusura dell'app
+atexit.register(clean_up)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

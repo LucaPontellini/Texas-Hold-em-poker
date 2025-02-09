@@ -1,5 +1,6 @@
 import random
-from flask import request
+import requests
+
 from .players import BotType, Player, Dealer, Bot, BettingRound
 from .deck import Deck, Card
 from .poker_rules import PokerRules
@@ -27,12 +28,12 @@ class TurnManager:
         current_player = self.get_current_player()
         data = {'current_turn': current_player.name}
         try:
-            response = request.post('http://localhost:5000/advance-turn', json=data)
+            response = requests.post('http://localhost:5000/advance-turn', json=data)
             if response.status_code == 200:
                 print("Turn information sent successfully")
             else:
                 print(f"Failed to send turn information: {response.status_code}")
-        except request.exceptions.RequestException as e:
+        except requests.exceptions.RequestException as e:
             print(f"Error sending turn information: {e}")
 
 class Game:
