@@ -37,7 +37,7 @@ def handle_post_request(action, bet_amount):
     response = game.generate_game_state_response()
     response['message'] = message
     print(f"Response data: {response}")
-    return response  # Return as a JSON-serializable dictionary
+    return response  # Restituisce un dizionario JSON-serializzabile
 
 @app.route("/new-game", methods=["POST"])
 def new_game():
@@ -45,18 +45,14 @@ def new_game():
     game = Game()
     game.setup_players()
     response = game.generate_game_state_response()
-    print("Generated game state response:", response)
     return jsonify(response)
 
 @app.route("/start-game", methods=["POST"])
 def start_game():
     global game
     try:
-        game = Game()
-        game.setup_players()
+        game.start_game()
         response = game.generate_game_state_response()
-        response['current_turn'] = game.assign_turns()
-        response['blinds_info'] = game.assign_blinds()
         return jsonify(response)
     except Exception as e:
         print(f"Errore durante l'avvio del gioco: {e}")
@@ -67,10 +63,8 @@ def advance_turn():
     global game
     print("Chiamata dell'endpoint advance-turn")
     game.turn_manager.next_turn()
-    game.check_phase_end()
-    current_player = game.turn_manager.get_current_player()
-    if isinstance(current_player, Bot):
-        game.execute_phase()
+    if game.check_phase_end():
+        game.next_phase()
     response = game.generate_game_state_response()
     return jsonify(response)
 
