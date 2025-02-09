@@ -1,3 +1,20 @@
+"""
+Questo file contiene una suite di test per verificare le funzionalità principali del gioco di Texas Hold'em Poker
+e dell'applicazione Flask che gestisce le richieste.
+
+I test coprono diverse aree, tra cui:
+
+- Creazione e gestione del mazzo di carte (`Deck`).
+- Funzionalità del singolo giocatore (`Player`).
+- Decisioni del bot giocatore (`Bot`).
+- Regole del poker (`PokerRules`).
+- Gestione dei turni (`TurnManager`).
+- Fasi del gioco (`Game`).
+- Test dell'app Flask per le richieste HTTP.
+
+La suite di test utilizza `pytest` per eseguire i test e verificare che tutte le componenti del gioco funzionino correttamente.
+"""
+
 import os
 import sys
 import pytest
@@ -35,7 +52,7 @@ def sample_poker_rules():
 
 @pytest.fixture
 def sample_game():
-    return Game(num_players=4)
+    return Game()
 
 @pytest.fixture
 def client():
@@ -100,7 +117,8 @@ def test_turn_manager():
     assert turn_manager.current_turn == 2
 
 def test_game_creation(sample_game):
-    assert len(sample_game.players) == 4
+    assert len(sample_game.players) >= 2
+    assert len(sample_game.players) <= 10
     assert sample_game.phase == Game.PRE_FLOP
 
 def test_game_setup(sample_game):

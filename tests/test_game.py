@@ -1,3 +1,17 @@
+"""
+Questo file contiene uno script per testare il funzionamento del gioco di Texas Hold'em Poker.
+L'obiettivo è simulare una partita completa con bot e giocatori umani, gestendo le varie fasi del gioco e le azioni dei giocatori.
+
+Funzionalità testate:
+- Inizializzazione del gioco e distribuzione delle carte.
+- Gestione delle fasi del gioco (pre-flop, flop, turn, river, showdown).
+- Esecuzione delle azioni dei giocatori (check, call, bet, raise, fold).
+- Visualizzazione delle informazioni di gioco (carte dei giocatori, carte comuni, piatto).
+
+Il gioco prosegue fino al raggiungimento del numero massimo di turni o fino alla fase di showdown.
+L'interfaccia utente è basata su testo e utilizza il modulo `termcolor` per colorare le informazioni mostrate.
+"""
+
 import sys
 import os
 import time

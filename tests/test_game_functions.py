@@ -1,4 +1,25 @@
+"""
+Questo file contiene una suite di test unitaria per verificare le funzionalità principali del gioco di Texas Hold'em Poker. 
+I test coprono diverse aree, tra cui:
+
+- Creazione e gestione del mazzo di carte (`Deck`).
+- Funzionalità del singolo giocatore (`Player`).
+- Decisioni del bot giocatore (`Bot`).
+- Regole del poker (`PokerRules`).
+- Gestione dei turni (`TurnManager`).
+- Fasi del gioco (`Game`).
+
+La suite di test utilizza il framework `unittest` per eseguire i test e verificare che tutte le componenti del gioco funzionino correttamente.
+"""
+
+import sys
+import os
 import unittest
+from pathlib import Path
+
+# Aggiunge il percorso principale del progetto al percorso di ricerca dei moduli
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 from python_files.deck import Card, Deck
 from python_files.players import Player, Bot, BotType, Dealer, BettingRound
 from python_files.poker_rules import PokerRules
@@ -7,11 +28,12 @@ from python_files.game import TurnManager, Game
 class TestGameFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.game = Game(num_players=4)
+        self.game = Game()
         self.game.setup_players()
 
     def test_initial_setup(self):
-        self.assertEqual(len(self.game.players), 4)
+        self.assertGreaterEqual(len(self.game.players), 2)  # Verifica che ci siano almeno 2 giocatori
+        self.assertLessEqual(len(self.game.players), 10)    # Verifica che ci siano al massimo 10 giocatori
         self.assertTrue(all(isinstance(player, (Player, Bot)) for player in self.game.players))
 
     def test_deck_creation(self):
