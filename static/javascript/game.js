@@ -363,14 +363,20 @@ updateButtons('initial', '', {});
 
 // Funzione per avviare la musica di sottofondo
 function playBackgroundMusic() {
+    console.log("Tentativo di riprodurre la musica di sottofondo...");
     var backgroundMusic = document.getElementById('background-music');
     if (backgroundMusic.paused) {
-        backgroundMusic.play();
+        backgroundMusic.play().then(() => {
+            console.log("Musica di sottofondo avviata.");
+        }).catch((error) => {
+            console.error("Errore durante la riproduzione della musica:", error);
+            alert("Per favore, abilita la riproduzione automatica dell'audio nel tuo browser.");
+        });
     }
 }
 
-// Avvia la musica quando la pagina viene caricata
-window.addEventListener('load', playBackgroundMusic);
+// Avvia la musica quando la pagina è stata completamente caricata e analizzata
+document.addEventListener('DOMContentLoaded', playBackgroundMusic);
 
 // Cambia la musica di sottofondo dopo che il primo brano finisce
 var backgroundMusic = document.getElementById('background-music');
@@ -380,7 +386,16 @@ backgroundMusic.addEventListener('ended', function() {
     } else {
         backgroundMusic.src = '/static/music/welcome_to_new_orleans.mp3';
     }
-    backgroundMusic.play();
+    backgroundMusic.play().then(() => {
+        console.log("Musica cambiata e avviata.");
+    }).catch((error) => {
+        console.error("Errore durante il cambio di musica:", error);
+    });
+});
+
+// Aggiungi anche il listener per il pulsante Exit per ulteriore debug
+document.getElementById('exit').addEventListener('click', function() {
+    console.log("Pulsante Exit premuto");
 });
 
 // Inizializza lo stato dei pulsanti

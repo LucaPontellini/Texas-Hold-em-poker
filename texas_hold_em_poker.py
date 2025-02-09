@@ -65,10 +65,11 @@ def start_game():
 @app.route("/advance-turn", methods=["POST"])
 def advance_turn():
     global game
-    print("Advance turn endpoint called")
+    print("Chiamata dell'endpoint advance-turn")
     game.turn_manager.next_turn()
+    game.check_phase_end()
     current_player = game.turn_manager.get_current_player()
-    if isinstance(current_player, Bot) or isinstance(current_player, dict):
+    if isinstance(current_player, Bot):
         game.execute_phase()
     response = game.generate_game_state_response()
     return jsonify(response)
@@ -76,7 +77,7 @@ def advance_turn():
 @app.route("/execute-bot-turn", methods=["POST"])
 def execute_bot_turn():
     global game
-    print("Executing bot turn endpoint called")
+    print("Chiamata dell'endpoint execute-bot-turn")
     game.execute_phase()
     response = game.generate_game_state_response()
     return jsonify(response)

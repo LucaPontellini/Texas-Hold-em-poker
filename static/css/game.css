@@ -84,6 +84,10 @@ body.poker-background {
     display: none;  /* Nasconde la scritta inizialmente */
 }
 
+.hidden {
+    display: none;
+}
+
 #actions-panel {
     position: fixed;
     left: 10px;

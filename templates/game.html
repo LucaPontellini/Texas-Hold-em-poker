@@ -12,23 +12,24 @@
     <div class="content-wrapper">
         <div id="actions-panel">
             <h1 class="game-title">Texas Hold'em Poker</h1>
-            <button id="newGame" class="button" onclick="newGame()">New Game</button>
-            <button id="startGame" class="button" onclick="startGame()" style="display: none;">Start Game</button>
-            <button id="exit" class="button" onclick="exitGame()">Exit</button>
-            <div id="gameButtons" style="display: none;">
-                <button id="check" class="button" data-tooltip="Check: Pass the turn without betting." onclick="executeAction('check')">Check</button>
-                <button id="bet" class="button" data-tooltip="Bet: Wager a certain amount of chips." onclick="toggleBetMenu()">Bet</button>
-                <button id="call" class="button" data-tooltip="Call: Match another player's bet." onclick="executeAction('call')">Call</button>
-                <button id="raise" class="button" data-tooltip="Raise: Increase the bet." onclick="executeAction('raise')">Raise</button>
-                <button id="fold" class="button" data-tooltip="Fold: Abandon the hand." onclick="executeAction('fold')">Fold</button>
+            <button id="newGame" class="button" type="button" onclick="newGame()">New Game</button>
+            <button id="startGame" class="button hidden" type="button" onclick="startGame()">Start Game</button>
+            <button id="exit" class="button" type="button" onclick="exitGame()">Exit</button>
+            <div id="gameButtons" class="hidden">
+                <button id="check" class="button" type="button" data-tooltip="Check: Pass the turn without betting." onclick="executeAction('check')">Check</button>
+                <button id="bet" class="button" type="button" data-tooltip="Bet: Wager a certain amount of chips." onclick="toggleBetMenu()">Bet</button>
+                <button id="call" class="button" type="button" data-tooltip="Call: Match another player's bet." onclick="executeAction('call')">Call</button>
+                <button id="raise" class="button" type="button" data-tooltip="Raise: Increase the bet." onclick="executeAction('raise')">Raise</button>
+                <button id="fold" class="button" type="button" data-tooltip="Fold: Abandon the hand." onclick="executeAction('fold')">Fold</button>
             </div>
-            <div class="slidecontainer" id="betMenu" style="display: none;">
-                <input type="range" min="1" value="50" class="slider" id="betRange" oninput="updateBetValue()">
+            <div class="slidecontainer hidden" id="betMenu">
+                <label for="betRange" class="sr-only">Adjust Bet Amount</label>
+                <input type="range" min="1" value="50" class="slider" id="betRange" oninput="updateBetValue()" title="Adjust Bet Amount">
                 <p class="bet-text">Chips to bet: <span id="betValue" class="bet-value">50</span></p>
-                <button class="button" onclick="placeBet()">Place Bet</button>
+                <button class="button" type="button" onclick="placeBet()">Place Bet</button>
             </div>            
-            <button id="rules" class="button" onclick="toggleRulesMenu()">Poker Rules</button>
-            <div id="rulesMenu" class="rules-menu" style="display: none;">
+            <button id="rules" class="button" type="button" onclick="toggleRulesMenu()">Poker Rules</button>
+            <div id="rulesMenu" class="rules-menu hidden">
                 <h2>Texas Hold'em Poker Rules</h2>        
                 <table>
                     <tr>
