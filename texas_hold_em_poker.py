@@ -104,6 +104,19 @@ if __name__ == "__main__":
     app.run(debug=True, port=5000)
 
 #TODO:
+
+#capire il motivo per cui il file flask faccia mandare in tilt il programma e crea un ciclo infinito
+#premendo il pulsante exit quando è attivo il server flask
+#trovare un modo per collegare il file html a quello javascript
+#trovare il modo di simulare correttamente il gioco collegando il file javascript e se serve
+#approtare modifiche al game.py per fare sì che si possa giocare da terminale tramite il file
+#_test_game.py e tramite il file texas_hold_em_poker.py
+#trovare un modo per mostrare a video le zioni dei bot con un messaggio che dura un tot di tempo (parte web)
+#idem per capire di chi è il turno
+#trovare un modo per avere file json già creato (per adesso) per avere un tot di fiches iniziali
+#è una base espandibile perchè bisogna trovare una compatibilità con i progetti passati
+#gestire tutto dinamicamente
+#cambiare il file html per le regole del poker (poker_rules.md)
 #gestire i casi in cui il giocatore vince o perde per aggiornare le fiches
 #gestire il caso in cui il giocatore non ha più soldi o fiches
 #gestire il caso in cui il giocatore si arrende
@@ -129,10 +142,11 @@ if __name__ == "__main__":
 #cambiare i colori ai pulsanti per una maggiore leggibilità essendo pulsanti di gioco
 #opzioni di grafica (regole del poker):
 #- spostare il mazzo a sinistra del dealer per non coprire le regole del poker
+#- spostare le altre cose per avere più pulizia per le regole del poker
 
 
 #per attivare il venv:
 #- andare sopra alla cartella del progetto
 #- aprire un nuovo reminale
 #- digitare il comando --> F:\Texas-Hold-em-poker\venv\Scripts\Activate.ps1
-#- se si vuole avviare il progetto --> python texas_hold_em_poker.py 
+#- se si vuole avviare il progetto --> python texas_hold_em_poker.py
