@@ -91,6 +91,23 @@ def advance_turn():
         logger.error(f"Errore durante l'avanzamento del turno: {e}")
         return jsonify({'error': str(e)}), 500
 
+@app.route("/action", methods=["POST"])
+def handle_action():
+    global game
+    logger.info("Handling action request")
+    action = request.form.get("action")
+    bet_amount = int(request.form.get("betAmount", 0))
+    try:
+        current_player = game.turn_manager.get_current_player()
+        message = game.execute_turn(current_player, action, bet_amount)
+        response = game.generate_game_state_response()
+        response['message'] = message
+        logger.info(f"Action response: {response}")
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Errore durante l'esecuzione dell'azione: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route("/execute-bot-turn", methods=["POST"])
 def execute_bot_turn():
     global game

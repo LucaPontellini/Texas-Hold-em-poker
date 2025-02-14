@@ -91,7 +91,7 @@ function getPlayerChips() {
 // Funzione per eseguire un'azione di gioco
 function executeAction(action, betAmount = 0) {
     console.log('Esecuzione azione:', action, 'con betAmount:', betAmount);  // Debugging
-    fetch('/', {
+    fetch('/action', {  // Assicurati che l'endpoint sia corretto
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -139,12 +139,10 @@ function advanceTurn() {
         updateButtons('betting', data.current_turn, data.blinds_info);
         showTurnMessage(data.message);
 
-        // Gestisce il turno del bot
         if (data.current_turn.startsWith("Bot")) {
             console.log("Esecuzione azione bot...");
             executeBotTurn(10);  // Imposta un limite di azioni consecutive per i bot
         } else {
-            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
             updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
@@ -174,11 +172,9 @@ function executeBotTurn(maxActions = 10) {
         updateButtons('betting', data.current_turn, data.blinds_info);
         showTurnMessage(data.message);
 
-        // Continua ad avanzare il turno finché non è il turno di un giocatore umano
         if (data.current_turn.startsWith("Bot")) {
-            executeBotTurn(maxActions - 1);  // Decrementa il contatore delle azioni dei bot
+            executeBotTurn(maxActions - 1);
         } else {
-            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
             updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
