@@ -143,6 +143,7 @@ function advanceTurn() {
             console.log("Esecuzione azione bot...");
             executeBotTurn(10);  // Imposta un limite di azioni consecutive per i bot
         } else {
+            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
             updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
@@ -173,8 +174,9 @@ function executeBotTurn(maxActions = 10) {
         showTurnMessage(data.message);
 
         if (data.current_turn.startsWith("Bot")) {
-            executeBotTurn(maxActions - 1);
+            executeBotTurn(maxActions - 1);  // Decrementa il contatore delle azioni dei bot
         } else {
+            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
             updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })

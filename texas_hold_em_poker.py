@@ -81,9 +81,13 @@ def advance_turn():
     global game
     logger.info("Chiamata dell'endpoint advance-turn")
     try:
+        current_player = game.turn_manager.get_current_player()
+        logger.info(f"Current turn for player: {current_player.name}")
         game.turn_manager.next_turn()
+        
         if game.check_phase_end():
             game.next_phase()
+        
         response = game.generate_game_state_response()
         logger.info(f"Advance turn response: {response}")
         return jsonify(response)
