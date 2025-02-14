@@ -27,6 +27,7 @@ class TurnManager:
     def send_turn_to_flask(self):
         current_player = self.get_current_player()
         data = {'current_turn': current_player.name}
+        print(f"Sending turn to Flask: {data}")  # Aggiungi un log per il debug
         try:
             response = requests.post('http://localhost:5000/advance-turn', json=data)
             if response.status_code == 200:
@@ -138,45 +139,32 @@ class Game:
     def execute_phase(self):
         current_player = self.turn_manager.get_current_player()
         current_player_name = current_player.name if not isinstance(current_player, dict) else current_player['name']
-    
+
         print(f"Executing phase for player: {current_player_name}")
-    
+
         if isinstance(current_player, Bot):
             action, bet_amount = current_player.make_decision(self.generate_game_state_response(), self.phase)
             print(f"Bot {current_player_name}: decision={action}, bet_amount={bet_amount}")
+            self.execute_turn(current_player, action, bet_amount)
         else:
             print(f"Player {current_player_name} is making a decision.")
-            valid_action = False
-            while not valid_action:
-                action = input(f"{current_player_name}, scegli la tua azione (check, call, bet, raise, fold): ").lower()
-                if action not in ['check', 'call', 'bet', 'raise', 'fold']:
-                    print("Azione non valida. Per favore, scegli un'azione valida.")
-                elif self.current_bet > 0 and action == 'check':
-                    print("Non puoi fare check quando c'è una scommessa in corso. Scegli un'altra azione.")
-                else:
-                    valid_action = True
-    
-            bet_amount = 0
-            if action in ['bet', 'raise']:
-                bet_amount = int(input("Inserisci la quantità di chip da scommettere: "))
-            elif action == 'call':
-                bet_amount = self.current_bet
-    
-            print(f"Azione del Giocatore: {action}, bet amount: {bet_amount}")
-    
-        self.execute_turn(current_player, action, bet_amount)
+            self.turn_manager.send_turn_to_flask()
+
+        if self.check_phase_end():
+            self.next_phase()  # Passa alla fase successiva se la fase corrente è finita
+
         self.turn_manager.next_turn()
+        print(f"New turn: {self.turn_manager.current_turn}")
 
     def execute_turn(self, player, action, bet_amount=0):
-        print("Remember to maintain respectful behavior and not to talk during the hands.")
+        print("Executing turn:", player.name, "-> action:", action, "bet amount:", bet_amount)  # Debugging
 
-        if action == 'string bet' or action == 'angle shooting' or action == 'collusion':
+        if action in ['string bet', 'angle shooting', 'collusion']:
             print(f"Invalid action: {action} by {player['name']}")
             return
 
         player_name = player['name'] if isinstance(player, dict) else player.name
         print(f"Executing turn: {player_name} -> action: {action}, bet amount: {bet_amount}")
-        message = f"{player_name} executes action: {action} with bet amount: {bet_amount}"
 
         if action in Game.VALID_ACTIONS:
             player_obj = next((p for p in self.players if p.name == player_name), None)

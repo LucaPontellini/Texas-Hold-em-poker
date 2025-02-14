@@ -1,11 +1,9 @@
 from itertools import combinations
-from .deck import Card
-
 class PokerRules:
     def __init__(self):
         self.hand_rankings = self.define_hand_rankings()
 
-    # Hand rankings in Texas Hold'em Poker
+    # Definisce le classifiche delle mani nel Texas Hold'em Poker
     def define_hand_rankings(self):
         return {
             'royal_flush': 10,  # Scala reale (Royal Flush)
@@ -26,6 +24,7 @@ class PokerRules:
         community_cards = deck[num_players*2:num_players*2+5]
         return hands, community_cards
 
+    # Estrae i valori delle carte
     def extract_values(self, hand):
         values = []
         for card in hand:
@@ -35,6 +34,7 @@ class PokerRules:
                 values.append(card.value)
         return values
 
+    # Estrae gli indici delle carte basati sui valori
     def extract_indices(self, hand):
         card_values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
         indices = []
@@ -46,6 +46,7 @@ class PokerRules:
             indices.append(index)
         return sorted(indices)
 
+    # Estrae i semi delle carte
     def extract_suits(self, hand):
         suits = []
         for card in hand:
@@ -55,57 +56,58 @@ class PokerRules:
                 suits.append(card.suit)
         return suits
 
+    # Verifica se la mano è una scala reale (Royal Flush)
     def royal_flush(self, hand):
-        # Scala reale (Royal Flush): Scala colore con 10, J, Q, K, A
         card_values = ['10', 'J', 'Q', 'K', 'A']
         return self.straight_flush(hand) and all(card.value in card_values for card in hand)
 
+    # Verifica se la mano è una scala colore (Straight Flush)
     def straight_flush(self, hand):
-        # Scala colore (Straight Flush): Scala con tutte le carte dello stesso seme
         return self.straight(hand) and self.flush(hand)
 
+    # Verifica se la mano è un poker (Four of a Kind)
     def four_of_a_kind(self, hand):
-        # Poker (Four of a Kind): Quattro carte dello stesso valore
         values = self.extract_values(hand)
         return any(values.count(value) == 4 for value in values)
 
+    # Verifica se la mano è un full (Full House)
     def full_house(self, hand):
-        # Full (Full House): Tris e Coppia
         values = self.extract_values(hand)
         three_of_a_kind = self.three_of_a_kind(hand)
         two_of_a_kind = any(values.count(value) == 2 for value in values)
         return three_of_a_kind and two_of_a_kind
 
+    # Verifica se la mano è un colore (Flush)
     def flush(self, hand):
-        # Colore (Flush): Cinque carte dello stesso seme
         suits = self.extract_suits(hand)
         return len(set(suits)) == 1
 
+    # Verifica se la mano è una scala (Straight)
     def straight(self, hand):
-        # Scala (Straight): Cinque carte in sequenza
         indices = self.extract_indices(hand)
         return indices == list(range(indices[0], indices[0] + 5)) or indices == [0, 1, 2, 3, 12]
 
+    # Verifica se la mano è un tris (Three of a Kind)
     def three_of_a_kind(self, hand):
-        # Tris (Three of a Kind): Tre carte dello stesso valore
         values = self.extract_values(hand)
         return any(values.count(value) == 3 for value in values)
 
+    # Verifica se la mano è una doppia coppia (Two Pairs)
     def two_pairs(self, hand):
-        # Doppia coppia (Two Pairs): Due coppie di carte dello stesso valore
         values = self.extract_values(hand)
         pairs = [value for value in set(values) if values.count(value) == 2]
         return len(pairs) == 2
 
+    # Verifica se la mano è una coppia (Pair)
     def pair(self, hand):
-        # Coppia (Pair): Due carte dello stesso valore
         values = self.extract_values(hand)
         return any(values.count(value) == 2 for value in values)
     
+    # Verifica se la mano è una carta alta (High Card)
     def high_card(self, hand):
-        # Carta alta (High Card): Nessuna delle combinazioni sopra
         return True
 
+    # Determina il vincitore tra due mani di giocatori
     def determine_winner(self, player_hand, opponent_hand, community_cards, player_name="Giocatore", opponent_name="Bot1"):
         player_best_hand = self.get_best_hand(player_hand + community_cards)
         opponent_best_hand = self.get_best_hand(opponent_hand + community_cards)
@@ -123,6 +125,7 @@ class PokerRules:
         else:
             return f"It's a tie! Both {player_name} and {opponent_name} have {player_hand_name} worth {player_ranking} points."
 
+    # Ottiene la migliore mano tra le carte fornite
     def get_best_hand(self, cards):
         best_hand = None
         highest_ranking = 0
@@ -136,12 +139,14 @@ class PokerRules:
 
         return best_hand
 
+    # Calcola il punteggio di una mano
     def calculate_hand_ranking(self, hand):
         for ranking, points in self.hand_rankings.items():
             if getattr(self, ranking)(hand):
                 return points
         return self.hand_rankings['high_card']
 
+    # Confronta i punteggi di due mani
     def compare_hand_rankings(self, player_ranking, opponent_ranking):
         if player_ranking > opponent_ranking:
             return "win"
@@ -150,12 +155,14 @@ class PokerRules:
         else:
             return "tie"
 
+    # Ottiene il nome della combinazione di una mano
     def hand_name(self, hand):
         for ranking in self.hand_rankings.keys():
             if getattr(self, ranking)(hand):
                 return ranking.replace('_', ' ').title()
         return "High Card"
     
+    # Fornisce una spiegazione della combinazione di una mano
     def get_hand_explanation(self, hand):
         if self.royal_flush(hand):
             return ("Hand: Royal Flush\n"

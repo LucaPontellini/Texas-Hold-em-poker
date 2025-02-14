@@ -28,10 +28,14 @@ class Player:
         self.aggressiveness += 1
 
     def bet_chips(self, amount):
+        if amount <= 0:
+            print(f"{self.name} ha tentato di scommettere un importo non valido: {amount}")
+            return 0
         if amount <= self.chips:
             self.chips -= amount
             self.current_bet += amount  # Tiene traccia della scommessa corrente
             return amount
+        print(f"{self.name} non ha abbastanza fiches per scommettere {amount}. Fiches disponibili: {self.chips}")
         return 0
 
     def get_chips(self):
@@ -79,19 +83,19 @@ class Bot(Player):
         hand_strength = self.evaluate_hand(game_state['community_cards'])
         pot_odds = self.calculate_pot_odds(game_state)
         opponent_behavior = self.analyze_opponent_behavior(game_state)
-
+    
         print(f"Bot {self.name}: hand_strength={hand_strength}, pot_odds={pot_odds}, opponent_behavior={opponent_behavior}, betting_round={betting_round}")
-
+    
         if betting_round == BettingRound.PRE_FLOP:
             decision, bet_amount = self.pre_flop_decision(hand_strength, pot_odds, opponent_behavior)
         else:
             decision, bet_amount = self.post_flop_decision(hand_strength, game_state, pot_odds, opponent_behavior)
-
+    
         if decision in ['bet', 'raise'] and bet_amount <= 0:
             decision = 'fold'  # Folda se bet_amount non è valido per puntata o rilancio
-
+    
         print(f"Bot {self.name}: decision={decision}, bet_amount={bet_amount}")
-
+    
         return decision, bet_amount
 
     def pre_flop_decision(self, hand_strength, pot_odds, opponent_behavior):

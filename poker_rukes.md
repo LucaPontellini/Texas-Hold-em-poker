@@ -27,15 +27,15 @@ Nel Texas Hold'em Poker, ogni giocatore riceve due carte coperte, conosciute com
 ### 4.1 Tipologie di Fiches
 Le fiches nel poker sono generalmente di diversi colori per indicare valori differenti:
 - **Bianco**: 1 chip.
-- **Rosso**: 5 chip
-- **Azzurro**: 10 chip
-- **Verde chiaro**: 25 chip
-- **Blu scuro**: 50 chip
-- **Verde scuro**: 100 chip
-- **Nero**: 500 chip
-- **Viola**: 1,000 chip
-- **Arancione**: 5,000 chip
-- **Giallo**: 10,000 chip
+- **Rosso**: 5 chip.
+- **Azzurro**: 10 chip.
+- **Verde chiaro**: 25 chip.
+- **Blu scuro**: 50 chip.
+- **Verde scuro**: 100 chip.
+- **Nero**: 500 chip.
+- **Viola**: 1,000 chip.
+- **Arancione**: 5,000 chip.
+- **Giallo**: 10,000 chip.
 
 ## 5. Valutazione delle Mani
 - **Carta Alta (High Card)**: La carta singola più alta.
@@ -65,11 +65,30 @@ Dopo l'ultimo turno di puntata, i giocatori rimanenti devono mostrare le loro ca
   - **Angle Shooting**: Comportamenti che sfruttano tecnicamente le regole in modo non etico.
   - **Collusion**: Collaborazione tra giocatori per barare.
 
+### 6.2 Procedura di Showdown
+- **Mostra la Mano Vince**: Nei casinò, la regola comune è che il giocatore che ha fatto l'ultima puntata o rilancio mostra per primo le carte.
+- **Condivisione del Piatto**: In caso di mani identiche, il piatto viene equamente diviso tra i giocatori vincitori.
+
 ## 7. Strategia di Gioco
 - **Posizione**: La tua posizione al tavolo è cruciale. Giocare in late position (LP) ti offre un vantaggio perché puoi osservare le azioni degli altri giocatori prima di prendere una decisione.
 - **Selezione delle Mani di Partenza**: Non giocare tutte le mani. Focalizzati sulle mani forti e medie in early position e amplia il range in late position.
 - **Lettura degli Avversari**: Presta attenzione ai comportamenti e alle tendenze degli avversari per prevedere le loro mosse.
 - **Gestione delle Fiches**: Calcola il rischio rispetto alla ricompensa e non puntare troppo su una mano debole.
+
+### 7.1 Varie Tipologie di Giocatori
+- **Loose**: Giocatori che partecipano a molte mani, anche con carte deboli.
+- **Tight**: Giocatori che partecipano solo con mani forti.
+- **Aggressivo**: Giocatori che fanno molte puntate e rilanci.
+- **Passivo**: Giocatori che tendono a fare check e call piuttosto che puntare o rilanciare.
+
+### 7.2 Strategie Avanzate
+- **Bluff Continuato**: Continuare a bluffare in turni successivi per rendere più credibile il proprio bluff.
+- **Semi-Bluff**: Bluffare con una mano che ha il potenziale di migliorare in turni successivi.
+- **Rilancio Isolante**: Rilanciare per isolare un singolo avversario e aumentare le proprie probabilità di vincita.
+
+### 7.3 Gestione del Bankroll
+- **Regole del Bankroll**: Consigli su come gestire le fiches e stabilire limiti per evitare perdite significative.
+- **Giocare Responsabilmente**: Suggerimenti per mantenere un approccio responsabile al gioco e evitare comportamenti compulsivi.
 
 ## 8. Regole di Etichetta
 - **Non parlare durante una mano**: Mentre una mano è ancora in corso, evita di parlare per non influenzare il gioco.
@@ -90,3 +109,26 @@ Dopo l'ultimo turno di puntata, i giocatori rimanenti devono mostrare le loro ca
 - **Non Lamentarti**: Anche se le cose non vanno come previsto, mantieni la calma e il rispetto.
 - **Non Rivelare le Tue Carte**: Fino allo showdown, mantieni le tue carte coperte e segrete.
 - **Non Interferire con le Mani degli Altri**: Lascia che ogni giocatore prenda le sue decisioni senza influenze esterne.
+
+## 12. Re-buy e Add-on
+- **Re-buy**: In alcuni tornei, i giocatori hanno la possibilità di acquistare ulteriori fiches se perdono tutte le loro fiches iniziali entro un determinato periodo.
+- **Add-on**: A un certo punto del torneo, generalmente durante una pausa, ai giocatori viene data l'opportunità di acquistare ulteriori fiches.
+
+## 13. Jackpot Progressivo
+Alcuni casinò offrono jackpot progressivi per mani particolarmente rare e forti come il poker d'assi battuto da una scala reale.
+
+## 14. Opzioni di Scommessa
+- **All-In**: Scommettere tutte le fiches disponibili.
+- **Side Pot**: Quando un giocatore va all-in, qualsiasi altra puntata successiva crea un piatto laterale (side pot) tra i giocatori rimanenti con fiches disponibili.
+
+## 15. Varianti del Texas Hold'em
+Anche se il regolamento principale riguarda il No-Limit Texas Hold'em, è utile menzionare altre varianti:
+- **Limit Hold'em**: Dove c'è un limite fisso per le puntate e i rilanci.
+- **Pot-Limit Hold'em**: Dove i giocatori possono puntare fino all'ammontare del piatto attuale.
+
+## 16. L'Importanza della Psicologia nel Poker
+- **Tells**: Riconoscere i segnali fisici o comportamentali degli avversari che potrebbero indicare la forza della loro mano.
+- **Mente Fredda**: Mantenere la calma e la concentrazione indipendentemente dal corso del gioco.
+
+## 17. Regole Specifiche del Casinò
+Ogni casinò può avere leggere variazioni nelle regole, quindi è sempre bene verificare specifici regolamenti locali prima di iniziare a giocare.

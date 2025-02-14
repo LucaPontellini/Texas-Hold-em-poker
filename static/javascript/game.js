@@ -90,6 +90,7 @@ function getPlayerChips() {
 
 // Funzione per eseguire un'azione di gioco
 function executeAction(action, betAmount = 0) {
+    console.log('Esecuzione azione:', action, 'con betAmount:', betAmount);  // Debugging
     fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -113,7 +114,8 @@ function executeAction(action, betAmount = 0) {
         }
 
         if (data.phase !== "showdown") {
-            advanceTurn();  // Assicurati che questa riga sia presente per avanzare il turno
+            console.log("Avanzamento del turno...");  // Debugging
+            advanceTurn();  // Avanza il turno solo se la fase non è Showdown
         }
     })
     .catch(error => {
@@ -123,6 +125,7 @@ function executeAction(action, betAmount = 0) {
 }
 
 function advanceTurn() {
+    console.log('Avanzamento del turno...');
     fetch('/advance-turn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -138,7 +141,11 @@ function advanceTurn() {
 
         // Gestisce il turno del bot
         if (data.current_turn.startsWith("Bot")) {
-            executeBotTurn();
+            console.log("Esecuzione azione bot...");
+            executeBotTurn(10);  // Imposta un limite di azioni consecutive per i bot
+        } else {
+            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
+            updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
     .catch(error => {
@@ -147,7 +154,13 @@ function advanceTurn() {
     });
 }
 
-function executeBotTurn() {
+function executeBotTurn(maxActions = 10) {
+    if (maxActions <= 0) {
+        console.error('Max bot actions reached, terminating bot loop.');
+        return;
+    }
+
+    console.log('Esecuzione turno bot...');
     fetch('/execute-bot-turn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -163,7 +176,10 @@ function executeBotTurn() {
 
         // Continua ad avanzare il turno finché non è il turno di un giocatore umano
         if (data.current_turn.startsWith("Bot")) {
-            executeBotTurn();
+            executeBotTurn(maxActions - 1);  // Decrementa il contatore delle azioni dei bot
+        } else {
+            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
+            updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
     .catch(error => {
@@ -401,9 +417,6 @@ backgroundMusic.addEventListener('ended', function() {
 document.getElementById('exit').addEventListener('click', function() {
     console.log("Pulsante Exit premuto");
 });
-
-// Inizializza lo stato dei pulsanti
-updateButtons('initial');
 
 // Gestione della scritta "Deck" sulla carta del mazzo
 document.addEventListener("DOMContentLoaded", function() {

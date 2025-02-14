@@ -39,9 +39,14 @@ def handle_post_request(action, bet_amount):
         message = game.execute_turn(current_player, action, bet_amount)
         logger.info(f"Result of action: {message}")
 
-        while isinstance(current_player, Bot):
+        # Esegui le azioni dei bot solo se non c'è un ciclo infinito
+        max_bot_actions = 10  # Numero massimo di azioni consecutive dei bot
+        bot_actions = 0
+
+        while isinstance(current_player, Bot) and bot_actions < max_bot_actions:
             game.execute_phase()
             current_player = game.turn_manager.get_current_player()
+            bot_actions += 1
     else:
         message = 'Invalid action'
 
@@ -64,8 +69,8 @@ def start_game():
     try:
         game = Game()
         game.setup_players()
-        game.start_game()
         response = game.generate_game_state_response()
+        print("Game setup completed successfully:", response)  # Aggiungi un log per il debug
         return jsonify(response)
     except Exception as e:
         logger.error(f"Errore durante l'avvio del gioco: {e}")
@@ -75,19 +80,29 @@ def start_game():
 def advance_turn():
     global game
     logger.info("Chiamata dell'endpoint advance-turn")
-    game.turn_manager.next_turn()
-    if game.check_phase_end():
-        game.next_phase()
-    response = game.generate_game_state_response()
-    return jsonify(response)
+    try:
+        game.turn_manager.next_turn()
+        if game.check_phase_end():
+            game.next_phase()
+        response = game.generate_game_state_response()
+        logger.info(f"Advance turn response: {response}")
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Errore durante l'avanzamento del turno: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/execute-bot-turn", methods=["POST"])
 def execute_bot_turn():
     global game
     logger.info("Chiamata dell'endpoint execute-bot-turn")
-    game.execute_phase()
-    response = game.generate_game_state_response()
-    return jsonify(response)
+    try:
+        game.execute_phase()
+        response = game.generate_game_state_response()
+        logger.info(f"Execute bot turn response: {response}")
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Errore durante l'esecuzione del turno del bot: {e}")
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/home_poker", methods=["GET"])
 def home_poker():
