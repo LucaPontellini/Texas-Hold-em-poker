@@ -73,10 +73,12 @@ class TestGameFunctions(unittest.TestCase):
             'community_cards': [Card("Hearts", "2"), Card("Clubs", "5"), Card("Diamonds", "10")],
             'current_bet': 100,
             'pot': 500,
-            'players': [bot]
+            'players': [bot],
+            'dealer_index': 0  # Assicurati che questa chiave sia presente
         }
         decision, bet_amount = bot.make_decision(game_state, BettingRound.PRE_FLOP)
         self.assertIn(decision, ['fold', 'call', 'raise'])
+
 
     def test_poker_hand_ranking(self):
         rules = PokerRules()

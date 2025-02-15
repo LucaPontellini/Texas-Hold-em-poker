@@ -46,38 +46,38 @@ class PokerRules:
     # Verifica se la mano è una scala colore (Straight Flush)
     def straight_flush(self, hand):
         return self.straight(hand) and self.flush(hand)
-
+    
     # Verifica se la mano è un poker (Four of a Kind)
     def four_of_a_kind(self, hand):
         values = self.extract_values(hand)
         return any(values.count(value) == 4 for value in values)
-
+    
     # Verifica se la mano è un full (Full House)
     def full_house(self, hand):
         values = self.extract_values(hand)
         three_of_a_kind = self.three_of_a_kind(hand)
         two_of_a_kind = any(values.count(value) == 2 for value in values)
         return three_of_a_kind and two_of_a_kind
-
+    
     # Verifica se la mano è un colore (Flush)
     def flush(self, hand):
         suits = self.extract_suits(hand)
         return len(set(suits)) == 1
-
+    
     # Verifica se la mano è una scala (Straight)
     def straight(self, hand):
         card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
         indices = [card_values[value] for value in self.extract_values(hand)]
         indices = sorted(set(indices))
-
+    
         if len(indices) < 5:
             return False
-
+    
         for i in range(len(indices) - 4):
             if indices[i:i + 5] == list(range(indices[i], indices[i] + 5)):
                 return True
-
-        return indices[-4:] == [2, 3, 4, 5, 14]  # Special case: Ace can be low in a straight (A, 2, 3, 4, 5)
+    
+        return indices[-5:] == [2, 3, 4, 5, 14]  # Caso speciale: l'Asso può essere basso in una scala (A, 2, 3, 4, 5)
 
     # Verifica se la mano è un tris (Three of a Kind)
     def three_of_a_kind(self, hand):

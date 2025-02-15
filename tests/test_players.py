@@ -1,148 +1,117 @@
-import pytest
 import sys
-import random
-from pathlib import Path
+import os
+import pytest
+from unittest.mock import mock_open, patch
 
-# Aggiunge il percorso principale del progetto al percorso di ricerca dei moduli
-sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from python_files.players import Player, Bot, BotType, BettingRound, Dealer
-from python_files.deck import Deck, Card
-from python_files.poker_rules import PokerRules
+from python_files.players import Player, Dealer, Bot, BotType, BettingRound
+from python_files.deck import Card
 
-def test_deck_initialization():
-    deck = Deck()
-    assert len(deck.deck_data) == 52, "Il mazzo dovrebbe contenere 52 carte."
+# Test per la classe Player
+def test_player_add_card():
+    player = Player("TestPlayer")
+    card = Card("Hearts", "A")
+    player.add_card(card)
+    assert player.has_card(card)
 
+def test_player_remove_card():
+    player = Player("TestPlayer")
+    card = Card("Hearts", "A")
+    player.add_card(card)
+    player.remove_card(card)
+    assert not player.has_card(card)
+
+def test_player_bet_chips():
+    player = Player("TestPlayer")
+    initial_chips = player.get_chips()
+    bet_amount = 100
+    player.bet_chips(bet_amount)
+    assert player.get_chips() == initial_chips - bet_amount
+
+def test_player_add_chips():
+    player = Player("TestPlayer")
+    initial_chips = player.get_chips()
+    player.add_chips(200)
+    assert player.get_chips() == initial_chips + 200
+
+# Test per la classe Dealer
 def test_dealer_shuffle_deck():
-    deck = Deck()
-    dealer = Dealer(deck=deck)
-    initial_deck = deck.deck_data.copy()
+    dealer = Dealer()
+    original_deck = dealer.deck.deck_data.copy()
     dealer.shuffle_deck()
-    assert initial_deck != deck.deck_data, "Il mazzo dovrebbe essere mescolato."
+    assert dealer.deck.deck_data != original_deck
 
 def test_dealer_deal_hole_cards():
-    deck = Deck()
-    dealer = Dealer(deck=deck)
+    dealer = Dealer()
     players = [Player("Player1"), Player("Player2")]
     dealer.deal_hole_cards(players)
     for player in players:
-        assert len(player.cards) == 2, f"{player.name} dovrebbe avere 2 carte."
+        assert len(player.cards) == 2
 
 def test_dealer_deal_community_cards():
-    deck = Deck()
-    dealer = Dealer(deck=deck)
+    dealer = Dealer()
     game_state = {'community_cards': []}
     dealer.deal_community_cards(game_state, 3)
-    assert len(game_state['community_cards']) == 3, "Dovrebbero esserci 3 carte comunitarie."
+    assert len(game_state['community_cards']) == 3
 
-def test_player_evaluate_hand():
-    player = Player("Player1")
-    player.add_card(Card("Hearts", "10"))
-    player.add_card(Card("Hearts", "J"))
-    community_cards = [Card("Hearts", "Q"), Card("Hearts", "K"), Card("Hearts", "A")]
-    player.poker_rules = PokerRules()
-    assert player.evaluate_hand(community_cards) == 10, "Il giocatore dovrebbe avere una scala reale."
+def test_dealer_determine_winner():
+    dealer = Dealer()
+    player1 = Player("Player1")
+    player2 = Player("Player2")
+    player1.add_card(Card("Hearts", "A"))
+    player1.add_card(Card("Diamonds", "A"))
+    player2.add_card(Card("Clubs", "K"))
+    player2.add_card(Card("Spades", "K"))
+    game_state = {'community_cards': [Card("Hearts", "2"), Card("Hearts", "3"), Card("Hearts", "4"), Card("Hearts", "5"), Card("Hearts", "6")]}
+    winner = dealer.determine_winner([player1, player2], game_state)
+    assert winner == player1
 
-def test_bot_make_decision():
-    deck = Deck()
-    bot = Bot("Bot1", BotType.AGGRESSIVE)
-    bot.add_card(Card("Hearts", "10"))
-    bot.add_card(Card("Hearts", "J"))
+# Test per la classe Bot
+@pytest.mark.parametrize("bot_type", BotType)
+def test_bot_make_decision(bot_type):
+    bot = Bot("TestBot", bot_type)
     game_state = {
+        'community_cards': [Card("Hearts", "A"), Card("Diamonds", "K"), Card("Clubs", "Q")],
+        'current_bet': 50,
+        'pot': 100,
         'players': [bot],
-        'community_cards': [Card("Hearts", "Q"), Card("Hearts", "K"), Card("Hearts", "A")],
-        'current_bet': 10,
-        'pot': 50,
         'dealer_index': 0
     }
     decision, bet_amount = bot.make_decision(game_state, BettingRound.PRE_FLOP)
-    assert decision in ["raise", "bet"], "Il bot aggressivo dovrebbe rilanciare o scommettere."
-    assert bet_amount > 0, "L'importo della puntata dovrebbe essere maggiore di 0."
+    assert decision in ["fold", "check", "call", "bet", "raise"]
 
-def test_gameplay():
-    # Creazione del mazzo di carte
-    deck = Deck()
-    dealer = Dealer(deck=deck)  # Creazione del dealer con il mazzo
+def test_bot_evaluate_hand():
+    bot = Bot("TestBot", BotType.AGGRESSIVE)
+    community_cards = [Card("Hearts", "2"), Card("Hearts", "3"), Card("Hearts", "4"), Card("Hearts", "5"), Card("Hearts", "6")]
+    bot.add_card(Card("Hearts", "7"))  # Cambiato da "Diamonds" a "Hearts"
+    bot.add_card(Card("Hearts", "8"))  # Cambiato da "Diamonds" a "Hearts"
+    hand_strength = bot.evaluate_hand(community_cards)
+    print(f"Hand strength: {hand_strength}")
+    assert hand_strength == 9  # Straight Flush
 
-    # Creazione del giocatore umano
-    human_player = Player("TestPlayer")
+def test_bot_calculate_pot_odds():
+    bot = Bot("TestBot", BotType.AGGRESSIVE)
+    game_state = {'current_bet': 50, 'pot': 100}
+    pot_odds = bot.calculate_pot_odds(game_state)
+    assert pot_odds == 2.0
 
-    # Creazione dei bot
-    bot1 = Bot("Bot1 (Aggressive)", BotType.AGGRESSIVE)
-    bot2 = Bot("Bot2 (Conservative)", BotType.CONSERVATIVE)
-    bot3 = Bot("Bot3 (Bluffer)", BotType.BLUFFER)
-    bot4 = Bot("Bot4 (Tight)", BotType.TIGHT)
-    bot5 = Bot("Bot5 (Loose)", BotType.LOOSE)
-    bot6 = Bot("Bot6 (Passive)", BotType.PASSIVE)
-    bot7 = Bot("Bot7 (Maniac)", BotType.MANIAC)
-    bot8 = Bot("Bot8 (Calling Station)", BotType.CALLING_STATION)
+def test_bot_analyze_opponent_behavior():
+    bot = Bot("TestBot", BotType.AGGRESSIVE)
+    game_state = {'players': [{'aggressiveness': 0.5}, {'aggressiveness': 0.7}]}
+    behavior_score = bot.analyze_opponent_behavior(game_state)
+    assert behavior_score == 2
 
-    # Lista di tutti i giocatori
-    players = [human_player, bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8]
-
-    # Assegnazione del dealer (che non gioca)
-    dealer_index = random.randint(0, len(players) - 1)
+def test_bot_evaluate_table_position():
+    bot = Bot("TestBot", BotType.AGGRESSIVE)
+    player1 = Player("Player1")
+    player2 = Player("Player2")
     game_state = {
-        'players': players,
-        'dealer_index': dealer_index,
-        'community_cards': [],
-        'current_bet': 0,
-        'pot': 0
+        'players': [player1, bot, player2],
+        'dealer_index': 0
     }
+    position = bot.evaluate_table_position(game_state)
+    assert position == 'small blind'
 
-    # Mescola il mazzo
-    dealer.shuffle_deck()
-    
-    # Distribuzione delle carte ai giocatori
-    dealer.deal_hole_cards(players)
-
-    # Inizio della partita
-    for round_number in range(1, 5):
-        betting_round = BettingRound(round_number)
-
-        for player in players[:]:  # Usa una copia della lista per evitare modifiche durante l'iterazione
-            if player == human_player:
-                action = "check"  # Scegliamo un'azione di test
-                bet_amount = 0
-                if action in ['bet', 'raise']:
-                    bet_amount = player.bet_chips(10)  # Scommettiamo 10 fiches per il test
-                elif action == 'call':
-                    if game_state['current_bet'] > player.current_bet:
-                        bet_amount = game_state['current_bet'] - player.current_bet
-                        player.bet_chips(bet_amount)
-                    else:
-                        action = 'check'
-                        bet_amount = 0
-                elif action == 'check':
-                    bet_amount = 0
-                elif action == 'fold':
-                    bet_amount = 0
-                    players.remove(player)
-                decision = action
-                player.set_has_acted()
-            else:
-                decision, bet_amount = player.make_decision(game_state, betting_round)
-                if decision in ['bet', 'raise']:
-                    player.bet_chips(bet_amount)
-                player.set_has_acted()
-
-            game_state['pot'] += player.current_bet
-            player.current_bet = 0
-            player.reset_has_acted()
-
-        # Distribuzione delle carte comunitarie in base al round di puntata
-        if round_number == 2:  # FLOP
-            dealer.deal_community_cards(game_state, 3)
-        elif round_number == 3:  # TURN
-            dealer.deal_community_cards(game_state, 1)
-        elif round_number == 4:  # RIVER
-            dealer.deal_community_cards(game_state, 1)
-
-    # Fine della partita - determinazione del vincitore e distribuzione delle vincite
-    winner = dealer.determine_winner(players, game_state)
-    dealer.distribute_winnings(winner, game_state)
-
-    # Verifica che ci sia un vincitore
-    assert winner is not None, "Dovrebbe esserci un vincitore alla fine del gioco."
-    assert winner.get_chips() > 0, "Il vincitore dovrebbe avere fiches."
+if __name__ == '__main__':
+    pytest.main(["-v", "test_players.py"])

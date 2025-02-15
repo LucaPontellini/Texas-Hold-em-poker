@@ -217,23 +217,7 @@ class Bot(Player):
 
     def evaluate_hand(self, community_cards):
         all_cards = self.cards + community_cards
-        if not all_cards:
-            return 0
-
-        if self.poker_rules.full_house(all_cards):
-            return 7
-        elif self.poker_rules.flush(all_cards):
-            return 6
-        elif self.poker_rules.straight(all_cards):
-            return 5
-        elif self.poker_rules.three_of_a_kind(all_cards):
-            return 4
-        elif self.poker_rules.two_pairs(all_cards):
-            return 3
-        elif self.poker_rules.pair(all_cards):
-            return 2
-        else:
-            return 1
+        return self.poker_rules.calculate_hand_ranking(all_cards)
 
     def calculate_pot_odds(self, game_state):
         current_bet = game_state['current_bet']

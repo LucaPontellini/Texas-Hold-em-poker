@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 # Importazione dei moduli di gioco
 sys.path.append(os.path.join(os.path.dirname(__file__), 'python_files'))
-from python_files.game import Game, Bot
+from python_files.game import Game, BettingRound, Bot
 
 # Definizione di Flask
 app = Flask(__name__, static_url_path="/static")
@@ -119,17 +119,51 @@ def handle_action():
         logger.error(f"Errore durante l'esecuzione dell'azione: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route("/execute-bot-turn", methods=["POST"])
+@app.route('/execute-bot-turn', methods=['POST'])
 def execute_bot_turn():
-    global game
-    logger.info("Chiamata dell'endpoint execute-bot-turn")
     try:
-        game.execute_phase()
-        response = game.generate_game_state_response()
-        logger.info(f"Execute bot turn response: {response}")
-        return jsonify(response)
+        # Log per il debugging
+        print("Executing bot turn")
+        
+        # Recupera l'ID del bot dal payload della richiesta
+        bot_id = request.json.get('bot_id')
+        print(f"Bot ID: {bot_id}")
+        
+        # Assicurati che il bot_id sia presente
+        if bot_id is None:
+            raise ValueError("Bot ID is missing")
+        
+        # Recupera il bot corretto
+        bot = next((player for player in game.players if player.id == bot_id), None)
+        if bot is None:
+            raise ValueError("Bot not found")
+        print(f"Bot trovato: {bot}")
+
+        # Recupera lo stato del gioco
+        game_state = {
+            'community_cards': game.community_cards,
+            'current_bet': game.current_bet,
+            'pot': game.pot,
+            'players': game.players,
+            'dealer_index': game.dealer_index
+        }
+        print(f"Game State: {game_state}")
+
+        # Assicurati che game_state contenga tutti i campi necessari
+        if not all(key in game_state for key in ['community_cards', 'current_bet', 'pot', 'players', 'dealer_index']):
+            raise ValueError("Incomplete game state")
+
+        decision, bet_amount = bot.make_decision(game_state, BettingRound.PRE_FLOP)
+        print(f"Decision: {decision}, Bet Amount: {bet_amount}")
+        
+        response = {
+            'decision': decision,
+            'bet_amount': bet_amount
+        }
+        print(f"Response: {response}")
+        return jsonify(response), 200
     except Exception as e:
-        logger.error(f"Errore durante l'esecuzione del turno del bot: {e}")
+        print(f"Error occurred: {e}")  # Log dell'errore
         return jsonify({'error': str(e)}), 500
     
 @app.route("/update-state", methods=["POST"])
