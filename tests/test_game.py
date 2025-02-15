@@ -145,3 +145,7 @@ def test_game():
 
 if __name__ == "__main__":
     test_game()
+
+#da controllare perchè va in errore
+#trovare una soluzione al problema di questo file
+#testarlo dal terminale
