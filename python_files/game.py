@@ -1,4 +1,5 @@
 import random
+from venv import logger
 import requests
 
 from .players import BotType, Player, Dealer, Bot, BettingRound
@@ -155,6 +156,23 @@ class Game:
 
         self.turn_manager.next_turn()
         print(f"New turn: {self.turn_manager.current_turn}")
+        self.update_client_state()  # Invia lo stato del gioco al client
+
+    def start_game(self):
+        while self.phase != Game.SHOWDOWN:
+            self.execute_phase()
+            if self.check_phase_end():
+                self.next_phase()
+        winner = self.get_winner()
+        print(winner)
+
+    def update_client_state(self):
+        response = self.generate_game_state_response()
+        try:
+            logger.info("Updating client state: %s", response)  # Log per il debug
+            requests.post('http://localhost:5000/update-state', json=response)
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error updating client state: {e}")
 
     def execute_turn(self, player, action, bet_amount=0):
         print("Executing turn:", player.name, "-> action:", action, "bet amount:", bet_amount)  # Debugging
@@ -305,6 +323,13 @@ class Game:
         self.blinds_info['small_blind'] = players[0].name
         self.blinds_info['big_blind'] = players[1].name
         return self.blinds_info
+    
+    def get_bot_actions(self):
+        bot_actions = []
+        for player in self.players:
+            if isinstance(player, Bot):
+                bot_actions.extend(player.get_actions())
+        return bot_actions
 
     def generate_game_state_response(self):
         try:
@@ -339,6 +364,8 @@ class Game:
             } for player in self.players
         ]
 
+        bot_actions = self.get_bot_actions()  # Assicurati di avere una funzione che raccoglie le azioni dei bot
+
         return {
             'player_hand': player_hand,
             'dealer_hand': dealer_hand,
@@ -352,7 +379,8 @@ class Game:
             'current_turn': self.players[self.turn_manager.current_turn].name,
             'pot': self.pot,
             'current_bet': self.current_bet,
-            'players': players_info
+            'players': players_info,
+            'bot_actions': bot_actions
         }
 
     def format_hand(self, cards):

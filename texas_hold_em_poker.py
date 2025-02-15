@@ -44,15 +44,19 @@ def handle_post_request(action, bet_amount):
         bot_actions = 0
 
         while isinstance(current_player, Bot) and bot_actions < max_bot_actions:
+            logger.info(f"Executing bot turn for player: {current_player.name}")
             game.execute_phase()
             current_player = game.turn_manager.get_current_player()
             bot_actions += 1
-    else:
-        message = 'Invalid action'
+
+    # Avanzare la fase se necessario
+    if game.check_phase_end():
+        game.next_phase()
 
     response = game.generate_game_state_response()
     response['message'] = message
     logger.info(f"Response data: {response}")
+    game.update_client_state()  # Assicuriamoci di inviare lo stato aggiornato al client
     return response
 
 @app.route("/new-game", methods=["POST"])
@@ -67,13 +71,16 @@ def new_game():
 def start_game():
     global game
     try:
+        logger.info("Starting a new game...")
         game = Game()
         game.setup_players()
         response = game.generate_game_state_response()
-        print("Game setup completed successfully:", response)  # Aggiungi un log per il debug
+        logger.info("Game setup completed successfully: %s", response)  # Aggiungi un log per il debug
+        game.update_client_state()  # Invia lo stato aggiornato al client
         return jsonify(response)
     except Exception as e:
         logger.error(f"Errore durante l'avvio del gioco: {e}")
+        logger.error(e, exc_info=True)  # Aggiungi questo per ottenere lo stack trace completo
         return jsonify({'error': str(e)}), 500
 
 @app.route("/advance-turn", methods=["POST"])
@@ -123,6 +130,16 @@ def execute_bot_turn():
         return jsonify(response)
     except Exception as e:
         logger.error(f"Errore durante l'esecuzione del turno del bot: {e}")
+        return jsonify({'error': str(e)}), 500
+    
+@app.route("/update-state", methods=["POST"])
+def update_state():
+    global game
+    try:
+        data = request.get_json()
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Errore nell'aggiornare lo stato del gioco: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route("/home_poker", methods=["GET"])

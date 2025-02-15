@@ -22,11 +22,16 @@ class Deck:
         deck_path = os.path.join(os.path.dirname(__file__), '..', deck_file)
         if not os.path.exists(deck_path):
             print(f"File not found: {deck_path}")
-            self.deck_data = []
+            self.deck_data = self.create_standard_deck()
         else:
             self.deck_data = self.load_deck(deck_path)
-            self.shuffle()  # Mescola le carte
-            self.print_deck()  # Stampa il mazzo per debug
+        self.shuffle()  # Mescola le carte
+        self.print_deck()  # Stampa il mazzo per debug
+
+    def create_standard_deck(self):
+        seeds = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+        values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+        return [Card(seed, value) for seed in seeds for value in values]
 
     def load_deck(self, deck_file_path):
         try:
@@ -38,12 +43,15 @@ class Deck:
             print(f"File not found: {deck_file_path}")
         except json.JSONDecodeError:
             print("Error decoding JSON from the file")
-        return []
+        return self.create_standard_deck()
 
     def create_cards(self, deck):
         cards = []
         for card in deck:
-            cards.append(Card(card['seed'], card['value']))
+            seed = card.get('seed')
+            value = card.get('value')
+            if seed and value:
+                cards.append(Card(seed, value))
         return cards
 
     def shuffle(self):

@@ -18,12 +18,6 @@ class PokerRules:
             'high_card': 1  # Carta alta (High Card)
         }
 
-    # Distribuisce le hole cards e le community cards
-    def distribute_cards(self, deck, num_players=2):
-        hands = [deck[i*2:(i+1)*2] for i in range(num_players)]
-        community_cards = deck[num_players*2:num_players*2+5]
-        return hands, community_cards
-
     # Estrae i valori delle carte
     def extract_values(self, hand):
         values = []
@@ -33,18 +27,6 @@ class PokerRules:
             else:
                 values.append(card.value)
         return values
-
-    # Estrae gli indici delle carte basati sui valori
-    def extract_indices(self, hand):
-        card_values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-        indices = []
-        for card in hand:
-            if isinstance(card, dict):
-                index = card_values.index(card['value'])
-            else:
-                index = card_values.index(card.value)
-            indices.append(index)
-        return sorted(indices)
 
     # Estrae i semi delle carte
     def extract_suits(self, hand):
@@ -59,7 +41,7 @@ class PokerRules:
     # Verifica se la mano è una scala reale (Royal Flush)
     def royal_flush(self, hand):
         card_values = ['10', 'J', 'Q', 'K', 'A']
-        return self.straight_flush(hand) and all(card.value in card_values for card in hand)
+        return self.straight_flush(hand) and all(card.value in card_values for card in hand) and len(set(self.extract_suits(hand))) == 1
 
     # Verifica se la mano è una scala colore (Straight Flush)
     def straight_flush(self, hand):
@@ -84,8 +66,18 @@ class PokerRules:
 
     # Verifica se la mano è una scala (Straight)
     def straight(self, hand):
-        indices = self.extract_indices(hand)
-        return indices == list(range(indices[0], indices[0] + 5)) or indices == [0, 1, 2, 3, 12]
+        card_values = {'2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, 'J': 11, 'Q': 12, 'K': 13, 'A': 14}
+        indices = [card_values[value] for value in self.extract_values(hand)]
+        indices = sorted(set(indices))
+
+        if len(indices) < 5:
+            return False
+
+        for i in range(len(indices) - 4):
+            if indices[i:i + 5] == list(range(indices[i], indices[i] + 5)):
+                return True
+
+        return indices[-4:] == [2, 3, 4, 5, 14]  # Special case: Ace can be low in a straight (A, 2, 3, 4, 5)
 
     # Verifica se la mano è un tris (Three of a Kind)
     def three_of_a_kind(self, hand):
@@ -106,6 +98,29 @@ class PokerRules:
     # Verifica se la mano è una carta alta (High Card)
     def high_card(self, hand):
         return True
+
+    # Calcola il punteggio di una mano
+    def calculate_hand_ranking(self, hand):
+        if self.royal_flush(hand):
+            return self.hand_rankings['royal_flush']
+        elif self.straight_flush(hand):
+            return self.hand_rankings['straight_flush']
+        elif self.four_of_a_kind(hand):
+            return self.hand_rankings['four_of_a_kind']
+        elif self.full_house(hand):
+            return self.hand_rankings['full_house']
+        elif self.flush(hand):
+            return self.hand_rankings['flush']
+        elif self.straight(hand):
+            return self.hand_rankings['straight']
+        elif self.three_of_a_kind(hand):
+            return self.hand_rankings['three_of_a_kind']
+        elif self.two_pairs(hand):
+            return self.hand_rankings['two_pairs']
+        elif self.pair(hand):
+            return self.hand_rankings['pair']
+        else:
+            return self.hand_rankings['high_card']
 
     # Determina il vincitore tra due mani di giocatori
     def determine_winner(self, player_hand, opponent_hand, community_cards, player_name="Giocatore", opponent_name="Bot1"):

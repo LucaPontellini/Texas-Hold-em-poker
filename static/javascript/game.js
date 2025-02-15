@@ -88,7 +88,6 @@ function getPlayerChips() {
     return parseInt(playerChipsElement.textContent, 10) || 0;
 }
 
-// Funzione per eseguire un'azione di gioco
 function executeAction(action, betAmount = 0) {
     console.log('Esecuzione azione:', action, 'con betAmount:', betAmount);  // Debugging
     fetch('/action', {  // Assicurati che l'endpoint sia corretto
@@ -108,6 +107,9 @@ function executeAction(action, betAmount = 0) {
         updateButtons('betting', data.current_turn, data.blinds_info);
         showTurnMessage(data.message);
 
+        // Aggiorna lo stato del gioco
+        updateGameState(data);
+
         if (data.winning_hand) {
             illuminateWinningHand(data.winning_hand);
             showWinningExplanation(data.winning_hand);
@@ -124,69 +126,6 @@ function executeAction(action, betAmount = 0) {
     });
 }
 
-function advanceTurn() {
-    console.log('Avanzamento del turno...');
-    fetch('/advance-turn', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Turno avanzato:", data);
-        displayHand(data.player_hand, 'player-hand');
-        displayHand(data.community_cards, 'community-cards');
-        displayDeck(data.deck_card, 'deck');
-        updateButtons('betting', data.current_turn, data.blinds_info);
-        showTurnMessage(data.message);
-
-        if (data.current_turn.startsWith("Bot")) {
-            console.log("Esecuzione azione bot...");
-            executeBotTurn(10);  // Imposta un limite di azioni consecutive per i bot
-        } else {
-            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
-            updateButtons('betting', data.current_turn, data.blinds_info);
-        }
-    })
-    .catch(error => {
-        console.error('Errore:', error);
-        alert('Si è verificato un errore durante l\'avanzamento del turno. Per favore, riprova.');
-    });
-}
-
-function executeBotTurn(maxActions = 10) {
-    if (maxActions <= 0) {
-        console.error('Max bot actions reached, terminating bot loop.');
-        return;
-    }
-
-    console.log('Esecuzione turno bot...');
-    fetch('/execute-bot-turn', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Bot ha eseguito il turno:", data);
-        displayHand(data.player_hand, 'player-hand');
-        displayHand(data.community_cards, 'community-cards');
-        displayDeck(data.deck_card, 'deck');
-        updateButtons('betting', data.current_turn, data.blinds_info);
-        showTurnMessage(data.message);
-
-        if (data.current_turn.startsWith("Bot")) {
-            executeBotTurn(maxActions - 1);  // Decrementa il contatore delle azioni dei bot
-        } else {
-            // Se il turno è di un giocatore umano, mostra i pulsanti di azione
-            updateButtons('betting', data.current_turn, data.blinds_info);
-        }
-    })
-    .catch(error => {
-        console.error('Errore:', error);
-        alert('Si è verificato un errore durante il turno del bot. Per favore, riprova.');
-    });
-}
-
-// Funzione per mostrare il messaggio del turno
 function showTurnMessage(message) {
     const turnMessageElement = document.getElementById('turn-message');
     turnMessageElement.textContent = message;
@@ -286,6 +225,39 @@ function updateButtons(state, currentTurn, blindsInfo) {
     }
 }
 
+function startGame() {
+    console.log('Invio richiesta POST a /start-game');
+    fetch('/start-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams()
+    })
+    .then(response => {
+        console.log('Risposta ricevuta:', response);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Partita avviata:", data);
+        if (data.error) {
+            throw new Error(data.error);  // Aggiungi gestione degli errori
+        }
+        updateGameState(data);
+    })
+    .catch(error => {
+        console.error('Errore nell\'avviare la partita:', error);
+        alert('Si è verificato un errore durante l\'avvio della partita. Per favore, riprova.');
+    });
+}
+
+function updateGameState(gameState) {
+    document.getElementById('currentTurn').innerText = `Turno corrente: ${gameState.current_turn}`;
+    document.getElementById('botActions').innerHTML = gameState.bot_actions.map(action => `<li>${action.action} (${action.bet_amount} chips)</li>`).join('');
+    displayHand(gameState.player_hand, 'player-hand');
+    displayHand(gameState.community_cards, 'community-cards');
+    displayDeck(gameState.deck_card, 'deck');
+    showTurnMessage(`È il turno di: ${gameState.current_turn}`);
+}
+
 // Funzione per avviare un nuovo gioco
 function newGame() {
     fetch('/new-game', {
@@ -316,7 +288,6 @@ function newGame() {
     });
 }
 
-// Funzione per avviare il gioco
 function startGame() {
     console.log('Invio richiesta POST a /start-game');
     fetch('/start-game', {
@@ -330,19 +301,7 @@ function startGame() {
     })
     .then(data => {
         console.log("Partita avviata:", data);
-        displayHand(data.player_hand, 'player-hand');
-        displayHand(data.community_cards, 'community-cards');
-        displayDeck(data.deck_card, 'deck');
-        showTurnMessage('Partita avviata. È il turno di: ' + data.current_turn);
-        updateButtons('betting', data.current_turn, data.blinds_info);
-        
-        const blindsInfoElement = document.getElementById('blinds-info');
-        blindsInfoElement.innerHTML = '';  
-        data.blinds_messages.forEach(message => {
-            const p = document.createElement('p');
-            p.textContent = message;
-            blindsInfoElement.appendChild(p);
-        });
+        updateGameState(data);
     })
     .catch(error => {
         console.error('Errore nell\'avviare la partita:', error);
@@ -353,6 +312,58 @@ function startGame() {
 // Funzione per uscire dal gioco
 function exitGame() {
     window.location.href = '/';
+}
+
+function advanceTurn() {
+    console.log('Avanzamento del turno...');
+    fetch('/advance-turn', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Turno avanzato:", data);
+        updateGameState(data);
+        
+        if (data.current_turn.startsWith("Bot")) {
+            console.log("Esecuzione azione bot...");
+            executeBotTurn(10);  // Imposta un limite di azioni consecutive per i bot
+        } else {
+            updateButtons('betting', data.current_turn, data.blinds_info);
+        }
+    })
+    .catch(error => {
+        console.error('Errore:', error);
+        alert('Si è verificato un errore durante l\'avanzamento del turno. Per favore, riprova.');
+    });
+}
+
+function executeBotTurn(maxActions = 10) {
+    if (maxActions <= 0) {
+        console.error('Max bot actions reached, terminating bot loop.');
+        return;
+    }
+
+    console.log('Esecuzione turno bot...');
+    fetch('/execute-bot-turn', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Bot ha eseguito il turno:", data);
+        updateGameState(data);
+
+        if (data.current_turn.startsWith("Bot")) {
+            executeBotTurn(maxActions - 1);  // Decrementa il contatore delle azioni dei bot
+        } else {
+            updateButtons('betting', data.current_turn, data.blinds_info);
+        }
+    })
+    .catch(error => {
+        console.error('Errore:', error);
+        alert('Si è verificato un errore durante il turno del bot. Per favore, riprova.');
+    });
 }
 
 // Funzione per illuminare la mano vincente
