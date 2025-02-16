@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiches Poker Test</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+        img {
+            width: 50px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fiches Poker</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Foto Fiches</th>
+                <th>Quantità</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><img src="/static/poker_chips/black_chips.jpg" alt="Fiches Nere"></td>
+                <td id="quantita_black">10</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/blue_chips.jpg" alt="Fiches Blu"></td>
+                <td id="quantita_blue">20</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/dark_green_chips.jpg" alt="Fiches Verde Scuro"></td>
+                <td id="quantita_dark_green">15</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/light_blue_chips.jpg" alt="Fiches Azzurre"></td>
+                <td id="quantita_light_blue">25</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/light_green_chips.jpg" alt="Fiches Verde Chiaro"></td>
+                <td id="quantita_light_green">30</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/orange_chips.jpg" alt="Fiches Arancioni"></td>
+                <td id="quantita_orange">5</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/purple_chips.jpg" alt="Fiches Viola"></td>
+                <td id="quantita_purple">8</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/red_chips.jpg" alt="Fiches Rosse"></td>
+                <td id="quantita_red">12</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/white_chips.jpg" alt="Fiches Bianche"></td>
+                <td id="quantita_white">18</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Funzione per aggiornare la quantità delle fiches
+        function aggiornaQuantita(colore, quantita) {
+            document.getElementById('quantita_' + colore).innerText = quantita;
+        }
+
+        // Esempio di aggiornamento dinamico
+        setInterval(function() {
+            aggiornaQuantita('black', 12); // Aggiorna la quantità delle fiches nere
+            aggiornaQuantita('blue', 22); // Aggiorna la quantità delle fiches blu
+            aggiornaQuantita('dark_green', 17); // Aggiorna la quantità delle fiches verde scuro
+            aggiornaQuantita('light_blue', 27); // Aggiorna la quantità delle fiches azzurre
+            aggiornaQuantita('light_green', 32); // Aggiorna la quantità delle fiches verde chiaro
+            aggiornaQuantita('orange', 7); // Aggiorna la quantità delle fiches arancioni
+            aggiornaQuantita('purple', 10); // Aggiorna la quantità delle fiches viola
+            aggiornaQuantita('red', 14); // Aggiorna la quantità delle fiches rosse
+            aggiornaQuantita('white', 20); // Aggiorna la quantità delle fiches bianche
+        }, 5000); // Aggiorna ogni 5 secondi
+    </script>
+</body>
+</html>
