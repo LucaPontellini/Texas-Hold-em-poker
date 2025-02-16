@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musica Poker Test</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Musica Poker</h1>
+    <audio id="player" controls hidden>
+        <source id="audioSource" src="/static/music/welcome_to_new_orleans" type="audio/mp3">
+    </audio>
+    <button id="toggleButton" onclick="togglePlay()">Play</button>
+
+    <script>
+        const musicTracks = [
+            '/static/music/best_jazz_club_NO',
+            '/static/music/welcome_to_new_orleans',
+            '/static/music/casino',
+            '/static/music/jazz_casino_bar',
+            '/static/music/two_cigarettes_please',
+            '/static/music/jazz_whiskey_casino'
+        ];
+
+        let currentTrack = 0;
+        const player = document.getElementById('player');
+        const audioSource = document.getElementById('audioSource');
+        const toggleButton = document.getElementById('toggleButton');
+
+        player.addEventListener('ended', () => {
+            currentTrack = (currentTrack + 1) % musicTracks.length;
+            audioSource.src = musicTracks[currentTrack];
+            player.load();
+            player.play();
+        });
+
+        function togglePlay() {
+            if (player.paused) {
+                player.play();
+                toggleButton.textContent = 'Pause';
+            } else {
+                player.pause();
+                toggleButton.textContent = 'Play';
+            }
+        }
+    </script>
+</body>
+</html>

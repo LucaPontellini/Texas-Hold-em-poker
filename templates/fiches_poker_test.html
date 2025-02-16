@@ -27,67 +27,96 @@
         <thead>
             <tr>
                 <th>Foto Fiches</th>
+                <th>Valore</th>
                 <th>Quantità</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td><img src="/static/poker_chips/black_chips.jpg" alt="Fiches Nere"></td>
-                <td id="quantita_black">10</td>
-            </tr>
-            <tr>
-                <td><img src="/static/poker_chips/blue_chips.jpg" alt="Fiches Blu"></td>
-                <td id="quantita_blue">20</td>
-            </tr>
-            <tr>
-                <td><img src="/static/poker_chips/dark_green_chips.jpg" alt="Fiches Verde Scuro"></td>
-                <td id="quantita_dark_green">15</td>
-            </tr>
-            <tr>
-                <td><img src="/static/poker_chips/light_blue_chips.jpg" alt="Fiches Azzurre"></td>
-                <td id="quantita_light_blue">25</td>
-            </tr>
-            <tr>
-                <td><img src="/static/poker_chips/light_green_chips.jpg" alt="Fiches Verde Chiaro"></td>
-                <td id="quantita_light_green">30</td>
-            </tr>
-            <tr>
-                <td><img src="/static/poker_chips/orange_chips.jpg" alt="Fiches Arancioni"></td>
-                <td id="quantita_orange">5</td>
-            </tr>
-            <tr>
-                <td><img src="/static/poker_chips/purple_chips.jpg" alt="Fiches Viola"></td>
-                <td id="quantita_purple">8</td>
+                <td><img src="/static/poker_chips/white_chips.jpg" alt="Fiches Bianche"></td>
+                <td>$1</td>
+                <td id="quantita_white">10</td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/red_chips.jpg" alt="Fiches Rosse"></td>
-                <td id="quantita_red">12</td>
+                <td>$5</td>
+                <td id="quantita_red">5</td>
             </tr>
             <tr>
-                <td><img src="/static/poker_chips/white_chips.jpg" alt="Fiches Bianche"></td>
-                <td id="quantita_white">18</td>
+                <td><img src="/static/poker_chips/light_blue_chips.jpg" alt="Fiches Azzurre"></td>
+                <td>$10</td>
+                <td id="quantita_light_blue">10</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/light_green_chips.jpg" alt="Fiches Verde Chiaro"></td>
+                <td>$25</td>
+                <td id="quantita_light_green">25</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/blue_chips.jpg" alt="Fiches Blu"></td>
+                <td>$50</td>
+                <td id="quantita_blue">50</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/dark_green_chips.jpg" alt="Fiches Verde Scuro"></td>
+                <td>$100</td>
+                <td id="quantita_dark_green">100</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/black_chips.jpg" alt="Fiches Nere"></td>
+                <td>$500</td>
+                <td id="quantita_black">500</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/purple_chips.jpg" alt="Fiches Viola"></td>
+                <td>$1,000</td>
+                <td id="quantita_purple">1,000</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/orange_chips.jpg" alt="Fiches Arancioni"></td>
+                <td>$5,000</td>
+                <td id="quantita_orange">5,000</td>
+            </tr>
+            <tr>
+                <td><img src="/static/poker_chips/yellow_chips.jpg" alt="Fiches Gialle"></td>
+                <td>$10,000</td>
+                <td id="quantita_yellow">10,000</td>
             </tr>
         </tbody>
     </table>
 
     <script>
-        // Funzione per aggiornare la quantità delle fiches
-        function aggiornaQuantita(colore, quantita) {
-            document.getElementById('quantita_' + colore).innerText = quantita;
+        // Funzione per generare numeri casuali tra min e max
+        function getRandomInt(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
-        // Esempio di aggiornamento dinamico
-        setInterval(function() {
-            aggiornaQuantita('black', 12); // Aggiorna la quantità delle fiches nere
-            aggiornaQuantita('blue', 22); // Aggiorna la quantità delle fiches blu
-            aggiornaQuantita('dark_green', 17); // Aggiorna la quantità delle fiches verde scuro
-            aggiornaQuantita('light_blue', 27); // Aggiorna la quantità delle fiches azzurre
-            aggiornaQuantita('light_green', 32); // Aggiorna la quantità delle fiches verde chiaro
-            aggiornaQuantita('orange', 7); // Aggiorna la quantità delle fiches arancioni
-            aggiornaQuantita('purple', 10); // Aggiorna la quantità delle fiches viola
-            aggiornaQuantita('red', 14); // Aggiorna la quantità delle fiches rosse
-            aggiornaQuantita('white', 20); // Aggiorna la quantità delle fiches bianche
-        }, 5000); // Aggiorna ogni 5 secondi
+        // Funzione per aggiornare la quantità delle fiches
+        function aggiornaQuantita() {
+            document.getElementById('quantita_white').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_red').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_light_blue').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_light_green').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_blue').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_dark_green').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_black').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_purple').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_orange').innerText = getRandomInt(1, 20);
+            document.getElementById('quantita_yellow').innerText = getRandomInt(1, 20);
+        }
+
+        // Aggiorna le quantità ogni 5 secondi
+        setInterval(aggiornaQuantita, 5000);
+
+        // **Passaggi per avviare il file HTML:**
+        // 1. Assicurarsi di avere Python installato sul computer.
+        // 2. Aprire il terminale o il prompt dei comandi.
+        // 3. Navigare fino alla directory che contiene il file HTML (F:\Texas-Hold-em-poker).
+        // 4. Avviare un server HTTP locale con il comando: python -m http.server
+        // 5. Aprire il browser web e andare all'indirizzo: http://localhost:8000/templates/fiches_poker_test.html
+
     </script>
 </body>
 </html>
