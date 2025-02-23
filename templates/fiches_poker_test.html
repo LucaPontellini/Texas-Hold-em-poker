@@ -5,110 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiches Poker Test</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 10px;
-            text-align: center;
-        }
-        img {
-            width: 50px;
-            height: 50px;
-        }
-    </style>
+    .container {
+        width: 60%;
+        margin: 20px auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .chip {
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+    }
+    img {
+        width: 40px;
+        height: 40px;
+        margin-right: 10px;
+    }
+    h1 {
+        text-align: center;
+        margin-top: 20px;
+        color: #333;
+    }
+    button {
+        padding: 5px 10px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        background-color: #f7f7f7;
+        color: #333;
+        border-radius: 5px;
+    }
+    span {
+        margin-left: 10px;
+        font-weight: bold;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        padding: 5px;
+        text-align: center;
+        border: 1px solid #ddd;
+        font-size: 14px;
+    }
+</style>    
 </head>
 <body>
     <h1>Fiches Poker</h1>
-    <table>
-        <thead>
+    <div class="container">
+        <table>
             <tr>
-                <th>Foto Fiches</th>
-                <th>Valore</th>
+                <th>Immagine</th>
                 <th>Quantità</th>
+                <th>Azioni</th>
             </tr>
-        </thead>
-        <tbody>
             <tr>
                 <td><img src="/static/poker_chips/white_chips.jpg" alt="Fiches Bianche"></td>
-                <td>$1</td>
-                <td id="quantita_white">10</td>
+                <td><span id="quantita_white">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_white', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_white', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/red_chips.jpg" alt="Fiches Rosse"></td>
-                <td>$5</td>
-                <td id="quantita_red">5</td>
+                <td><span id="quantita_red">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_red', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_red', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/light_blue_chips.jpg" alt="Fiches Azzurre"></td>
-                <td>$10</td>
-                <td id="quantita_light_blue">10</td>
+                <td><span id="quantita_light_blue">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_light_blue', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_light_blue', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/light_green_chips.jpg" alt="Fiches Verde Chiaro"></td>
-                <td>$25</td>
-                <td id="quantita_light_green">25</td>
+                <td><span id="quantita_light_green">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_light_green', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_light_green', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/blue_chips.jpg" alt="Fiches Blu"></td>
-                <td>$50</td>
-                <td id="quantita_blue">50</td>
+                <td><span id="quantita_blue">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_blue', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_blue', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/dark_green_chips.jpg" alt="Fiches Verde Scuro"></td>
-                <td>$100</td>
-                <td id="quantita_dark_green">100</td>
+                <td><span id="quantita_dark_green">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_dark_green', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_dark_green', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/black_chips.jpg" alt="Fiches Nere"></td>
-                <td>$500</td>
-                <td id="quantita_black">500</td>
+                <td><span id="quantita_black">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_black', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_black', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/purple_chips.jpg" alt="Fiches Viola"></td>
-                <td>$1,000</td>
-                <td id="quantita_purple">1,000</td>
+                <td><span id="quantita_purple">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_purple', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_purple', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/orange_chips.jpg" alt="Fiches Arancioni"></td>
-                <td>$5,000</td>
-                <td id="quantita_orange">5,000</td>
+                <td><span id="quantita_orange">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_orange', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_orange', -1)">-</button>
+                </td>
             </tr>
             <tr>
                 <td><img src="/static/poker_chips/yellow_chips.jpg" alt="Fiches Gialle"></td>
-                <td>$10,000</td>
-                <td id="quantita_yellow">10,000</td>
+                <td><span id="quantita_yellow">0</span></td>
+                <td>
+                    <button onclick="aggiornaQuantita('quantita_yellow', 1)">+</button>
+                    <button onclick="aggiornaQuantita('quantita_yellow', -1)">-</button>
+                </td>
             </tr>
-        </tbody>
-    </table>
-
+        </table>
+        <button onclick="resettaQuantita()">Resetta Tutto</button>
+    </div>
     <script>
-        // Funzione per generare numeri casuali tra min e max
-        function getRandomInt(min, max) {
-            min = Math.ceil(min);
-            max = Math.floor(max);
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        function aggiornaQuantita(id, change) {
+            var quantita = document.getElementById(id).innerText;
+            quantita = parseInt(quantita, 10) + change;
+            if (quantita >= 0) {
+                document.getElementById(id).innerText = quantita;
+            }
         }
 
-        // Funzione per aggiornare la quantità delle fiches
-        function aggiornaQuantita() {
-            document.getElementById('quantita_white').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_red').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_light_blue').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_light_green').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_blue').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_dark_green').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_black').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_purple').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_orange').innerText = getRandomInt(1, 20);
-            document.getElementById('quantita_yellow').innerText = getRandomInt(1, 20);
+        function resettaQuantita() {
+            var ids = ['quantita_white', 'quantita_red', 'quantita_light_blue', 'quantita_light_green', 'quantita_blue', 'quantita_dark_green', 'quantita_black', 'quantita_purple', 'quantita_orange', 'quantita_yellow'];
+            ids.forEach(function(id) {
+                document.getElementById(id).innerText = 0;
+            });
         }
-
-        // Aggiorna le quantità ogni 5 secondi
-        setInterval(aggiornaQuantita, 5000);
 
         // **Passaggi per avviare il file HTML:**
         // 1. Assicurarsi di avere Python installato sul computer.
@@ -116,7 +166,6 @@
         // 3. Navigare fino alla directory che contiene il file HTML (F:\Texas-Hold-em-poker).
         // 4. Avviare un server HTTP locale con il comando: python -m http.server
         // 5. Aprire il browser web e andare all'indirizzo: http://localhost:8000/templates/fiches_poker_test.html
-
     </script>
 </body>
 </html>
