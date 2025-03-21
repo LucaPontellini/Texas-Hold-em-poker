@@ -225,30 +225,6 @@ function updateButtons(state, currentTurn, blindsInfo) {
     }
 }
 
-function startGame() {
-    console.log('Invio richiesta POST a /start-game');
-    fetch('/start-game', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams()
-    })
-    .then(response => {
-        console.log('Risposta ricevuta:', response);
-        return response.json();
-    })
-    .then(data => {
-        console.log("Partita avviata:", data);
-        if (data.error) {
-            throw new Error(data.error);  // Aggiungi gestione degli errori
-        }
-        updateGameState(data);
-    })
-    .catch(error => {
-        console.error('Errore nell\'avviare la partita:', error);
-        alert('Si è verificato un errore durante l\'avvio della partita. Per favore, riprova.');
-    });
-}
-
 function updateGameState(gameState) {
     document.getElementById('currentTurn').innerText = `Turno corrente: ${gameState.current_turn}`;
     document.getElementById('botActions').innerHTML = gameState.bot_actions.map(action => `<li>${action.action} (${action.bet_amount} chips)</li>`).join('');

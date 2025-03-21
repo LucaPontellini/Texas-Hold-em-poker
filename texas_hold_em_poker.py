@@ -180,6 +180,10 @@ def update_state():
 def home_poker():
     return render_template("home_poker.html")
 
+@app.route("/poker_rules", methods=["GET"])
+def poker_rules():
+    return render_template("poker_rules.html")
+
 def clean_up():
     logger.info("Cleaning up before shutdown...")
     # Esegui eventuali operazioni di chiusura necessarie
@@ -188,7 +192,7 @@ def clean_up():
 atexit.register(clean_up)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
 
 #TODO:
 

@@ -60,3 +60,49 @@ ul {
 p {
     margin: 10px 0;
 }
+
+.fiches-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 1em; /* Ridotta leggermente la dimensione generale */
+}
+
+.fiches-table.small {
+    width: 80%; /* Ridotta larghezza per renderla più compatta */
+    font-size: 0.85em; /* Font più piccolo per integrarsi meglio */
+    margin: 0 auto; /* Centrare la tabella */
+}
+
+.fiches-table th, .fiches-table td {
+    border: 1px solid #000;
+    padding: 5px; /* Margini interni più piccoli per compattezza */
+    text-align: center;
+}
+
+.fiches-table th {
+    background-color: #4CAF50;
+    color: white;
+    font-size: 0.9em; /* Intestazioni con font leggermente ridotto */
+}
+
+.fiches-table img {
+    width: 40px; /* Ridotte le dimensioni delle immagini */
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fiches-table td span {
+    font-weight: bold;
+    font-size: 0.9em; /* Testo delle quantità ridotto */
+    color: #333;
+}
+
+p {
+    font-style: italic;
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 5px;
+    text-align: center;
+}
