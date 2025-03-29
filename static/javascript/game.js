@@ -88,9 +88,17 @@ function getPlayerChips() {
     return parseInt(playerChipsElement.textContent, 10) || 0;
 }
 
+let isRequestPending = false;
+
 function executeAction(action, betAmount = 0) {
-    console.log('Esecuzione azione:', action, 'con betAmount:', betAmount);  // Debugging
-    fetch('/action', {  // Assicurati che l'endpoint sia corretto
+    if (isRequestPending) {
+        console.warn('Azione già in corso. Attendi la risposta.');
+        return;
+    }
+
+    isRequestPending = true;
+    console.log('Esecuzione azione:', action, 'con betAmount:', betAmount);
+    fetch('/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
@@ -100,15 +108,12 @@ function executeAction(action, betAmount = 0) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Azione eseguita:", data);  // Debugging
+        console.log("Azione eseguita:", data);
         displayHand(data.player_hand, 'player-hand');
         displayHand(data.community_cards, 'community-cards');
         displayDeck(data.deck_card, 'deck');
         updateButtons('betting', data.current_turn, data.blinds_info);
         showTurnMessage(data.message);
-
-        // Aggiorna lo stato del gioco
-        updateGameState(data);
 
         if (data.winning_hand) {
             illuminateWinningHand(data.winning_hand);
@@ -116,13 +121,15 @@ function executeAction(action, betAmount = 0) {
         }
 
         if (data.phase !== "showdown") {
-            console.log("Avanzamento del turno...");  // Debugging
-            advanceTurn();  // Avanza il turno solo se la fase non è Showdown
+            advanceTurn();
         }
     })
     .catch(error => {
         console.error('Errore:', error);
         alert('Si è verificato un errore durante l\'esecuzione dell\'azione. Per favore, riprova.');
+    })
+    .finally(() => {
+        isRequestPending = false; // Permetti nuove richieste
     });
 }
 
@@ -204,14 +211,14 @@ function updateButtons(state, currentTurn, blindsInfo) {
         exitButton.style.display = 'block';
     }
 
-    const currentTurnIsPlayer = (currentTurn === playerName);
+    const currentTurnIsPlayer = (currentTurn === 'player');
     gameButtonArray.forEach(button => {
-        if (button.id !== 'newGame' && button.id !== 'startGame' && button.id !== 'exit' && button.id !== 'rules') {
+        if (button.id !== 'newGame' && button.id !== 'startGame' && button.id !== 'exit') {
             button.disabled = !currentTurnIsPlayer;
-            button.style.backgroundColor = currentTurnIsPlayer ? '#4CAF50' : '#D3D3D3';  
-            button.style.color = currentTurnIsPlayer ? 'white' : '#888';  
+            button.style.backgroundColor = currentTurnIsPlayer ? '#4CAF50' : '#D3D3D3';
+            button.style.color = currentTurnIsPlayer ? 'white' : '#888';
         }
-    });
+    });    
 
     if (blindsInfo) {  
         let turnMessage = `È il turno di: ${currentTurn}`;
@@ -225,42 +232,51 @@ function updateButtons(state, currentTurn, blindsInfo) {
     }
 }
 
-function updateGameState(gameState) {
-    document.getElementById('currentTurn').innerText = `Turno corrente: ${gameState.current_turn}`;
-    document.getElementById('botActions').innerHTML = gameState.bot_actions.map(action => `<li>${action.action} (${action.bet_amount} chips)</li>`).join('');
-    displayHand(gameState.player_hand, 'player-hand');
-    displayHand(gameState.community_cards, 'community-cards');
-    displayDeck(gameState.deck_card, 'deck');
-    showTurnMessage(`È il turno di: ${gameState.current_turn}`);
+function highlightCurrentPlayerTurn(currentTurn) {
+    const turnInfoElement = document.getElementById('turn-info');
+    if (turnInfoElement) {
+        turnInfoElement.style.backgroundColor = currentTurn === 'player' ? '#FFD700' : 'transparent'; // Evidenzia il turno del giocatore
+    }
 }
 
-// Funzione per avviare un nuovo gioco
+function updateGameState(gameState) {
+    console.log("Stato aggiornato:", gameState); // Debugging dettagliato
+    const currentTurnElement = document.getElementById('currentTurn');
+    if (currentTurnElement) {
+        currentTurnElement.innerText = `Turno corrente: ${gameState.current_turn}`;
+    }
+    highlightCurrentPlayerTurn(gameState.current_turn);
+}
+
+function logMessage(type, message) {
+    const logPrefix = `[${new Date().toISOString()}] ${type.toUpperCase()}:`;
+    console.log(`${logPrefix} ${message}`);
+}
+
+// Utilizzo:
+logMessage('info', 'Gioco avviato con successo.');
+logMessage('error', 'Si è verificato un errore durante l\'esecuzione dell\'azione.');
+
 function newGame() {
     fetch('/new-game', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams()
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log("Gioco reimpostato:", data);
-        // Pulisci l'interfaccia utente e prepara per l'inizio del gioco
+        console.log("Dati ricevuti da /new-game:", data);
         document.getElementById('player-hand').innerHTML = '';
         document.getElementById('community-cards').innerHTML = '';
         document.getElementById('deck').innerHTML = '';
         document.getElementById('winner').textContent = '';
         document.getElementById('winner').style.display = 'none';
-        document.getElementById('blinds-info').innerHTML = ''; // Pulisci i messaggi dei blinds
-        updateButtons('readyToStart', data.current_turn, data.blinds_info);  // Aggiorna i pulsanti
+        document.getElementById('blinds-info').innerHTML = '';
+        updateButtons('readyToStart', data.current_turn, data.blinds_info);
     })
     .catch(error => {
         console.error('Errore nel reimpostare il gioco:', error);
-        alert('Si è verificato un errore durante il reset del gioco. Per favore, riprova.');
+        alert('Si è verificato un errore durante il reset del gioco.');
     });
 }
 
@@ -271,17 +287,14 @@ function startGame() {
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams()
     })
-    .then(response => {
-        console.log('Risposta ricevuta:', response);
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log("Partita avviata:", data);
+        console.log("Dati ricevuti da /start-game:", data);
         updateGameState(data);
     })
     .catch(error => {
         console.error('Errore nell\'avviare la partita:', error);
-        alert('Si è verificato un errore durante l\'avvio della partita. Per favore, riprova.');
+        alert('Si è verificato un errore durante l\'avvio della partita.');
     });
 }
 
@@ -298,29 +311,28 @@ function advanceTurn() {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Turno avanzato:", data);
+        console.log("Dati ricevuti da /advance-turn:", data);
         updateGameState(data);
-        
+
         if (data.current_turn.startsWith("Bot")) {
-            console.log("Esecuzione azione bot...");
-            executeBotTurn(10);  // Imposta un limite di azioni consecutive per i bot
+            executeBotTurn(10);
         } else {
             updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
     .catch(error => {
-        console.error('Errore:', error);
-        alert('Si è verificato un errore durante l\'avanzamento del turno. Per favore, riprova.');
+        console.error('Errore durante l\'avanzamento del turno:', error);
+        alert('Si è verificato un errore durante l\'avanzamento del turno.');
     });
 }
 
 function executeBotTurn(maxActions = 10) {
     if (maxActions <= 0) {
-        console.error('Max bot actions reached, terminating bot loop.');
+        console.error('Limite massimo di azioni bot raggiunto. Terminazione del ciclo.');
+        alert('Il limite massimo di azioni bot è stato raggiunto. Verifica il funzionamento del gioco.');
         return;
     }
 
-    console.log('Esecuzione turno bot...');
     fetch('/execute-bot-turn', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
@@ -331,16 +343,17 @@ function executeBotTurn(maxActions = 10) {
         updateGameState(data);
 
         if (data.current_turn.startsWith("Bot")) {
-            executeBotTurn(maxActions - 1);  // Decrementa il contatore delle azioni dei bot
+            executeBotTurn(maxActions - 1);
         } else {
             updateButtons('betting', data.current_turn, data.blinds_info);
         }
     })
     .catch(error => {
-        console.error('Errore:', error);
+        console.error('Errore durante il turno del bot:', error);
         alert('Si è verificato un errore durante il turno del bot. Per favore, riprova.');
     });
 }
+
 
 // Funzione per illuminare la mano vincente
 function illuminateWinningHand(winningHand) {

@@ -1,5 +1,10 @@
-from .deck import Card, Deck
-from .poker_rules import PokerRules
+import sys
+import os
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from deck import Card, Deck
+from python_files.poker_rules import PokerRules
 from enum import Enum
 import random
 
@@ -55,6 +60,13 @@ class Player:
     def evaluate_hand(self, community_cards):
             all_cards = self.cards + community_cards
             return self.poker_rules.calculate_hand_ranking(all_cards)
+    
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'chips': self.chips,
+            'aggressiveness': getattr(self, 'aggressiveness', None)
+        }
 
 class Dealer(Player):
     def __init__(self, name: str = "Dealer", deck=None):
@@ -235,11 +247,30 @@ class Bot(Player):
         return behavior_score
     
     def evaluate_table_position(self, game_state):
-        current_player_index = game_state['players'].index(self)
+        # Verifica che 'dealer_index' esista in game_state
+        if 'dealer_index' not in game_state:
+            raise KeyError("La chiave 'dealer_index' non è presente in game_state. Contenuto: {game_state}")
+    
+        current_player_index = next(
+            (
+                index
+                for index, player in enumerate(game_state['players'])
+                if (isinstance(player, dict) and player.get('name') == self.name) or
+                   (hasattr(player, 'name') and player.name == self.name)
+            ),
+            None
+        )
+    
+        if current_player_index is None:
+            raise ValueError(
+                f"Player {self.name} non trovato in game_state['players']. "
+                f"Contenuto: {game_state['players']}"
+            )
+    
         dealer_index = game_state['dealer_index']
         num_players = len(game_state['players'])
         relative_position = (current_player_index - dealer_index) % num_players
-
+    
         if relative_position == 1:
             return 'small blind'
         elif relative_position == 2:
@@ -250,3 +281,6 @@ class Bot(Player):
             return 'middle'
         else:
             return 'late'
+        
+    def to_dict(self):
+        return super().to_dict()  # Usa la conversione ereditata da Player

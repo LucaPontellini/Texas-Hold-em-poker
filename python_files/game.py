@@ -2,9 +2,9 @@ import random
 from venv import logger
 import requests
 
-from .players import BotType, Player, Dealer, Bot, BettingRound
-from .deck import Deck, Card
-from .poker_rules import PokerRules
+from players import BotType, Player, Dealer, Bot, BettingRound
+from python_files.deck import Deck, Card
+from python_files.poker_rules import PokerRules
 
 class TurnManager:
     def __init__(self, players):
@@ -30,7 +30,7 @@ class TurnManager:
         data = {'current_turn': current_player.name}
         print(f"Sending turn to Flask: {data}")  # Aggiungi un log per il debug
         try:
-            response = requests.post('http://localhost:5000/advance-turn', json=data)
+            response = requests.post('http://localhost:5001/advance-turn', json=data)
             if response.status_code == 200:
                 print("Turn information sent successfully")
             else:
@@ -69,6 +69,14 @@ class Game:
         bots = [Bot(f"Bot{i+1}", random.choice(bot_types)) for i in range(num_players - 1)]
         all_players = players + bots
         random.shuffle(all_players)
+    
+        # Debug: verifica che "player" sia presente
+        player_names = [player.name for player in all_players]
+        if "player" not in player_names:
+            print("Errore: Il giocatore umano 'player' non è nella lista dei giocatori!")
+        else:
+            print(f"Giocatori dopo il mescolamento: {player_names}")
+    
         return all_players
 
     def set_blinds(self):
@@ -169,10 +177,17 @@ class Game:
     def update_client_state(self):
         response = self.generate_game_state_response()
         try:
-            logger.info("Updating client state: %s", response)  # Log per il debug
-            requests.post('http://localhost:5000/update-state', json=response)
+            # Debug: verifica che il dizionario sia serializzabile
+            import json
+            print("Verificando la serializzabilità dello stato del gioco...")
+            print(json.dumps(response, indent=4))  # Stampa lo stato per verificare eventuali errori
+
+            # Invia lo stato aggiornato al server
+            requests.post('http://localhost:5001/update-state', json=response)
+        except TypeError as e:
+            print(f"Errore di serializzazione: {e}")
         except requests.exceptions.RequestException as e:
-            logger.error(f"Error updating client state: {e}")
+            print(f"Errore durante l'aggiornamento dello stato del client: {e}")
 
     def execute_turn(self, player, action, bet_amount=0):
         print("Executing turn:", player.name, "-> action:", action, "bet amount:", bet_amount)  # Debugging
@@ -332,10 +347,14 @@ class Game:
         return bot_actions
 
     def generate_game_state_response(self):
+        # Debug: verifica i giocatori presenti
+        print(f"Stato corrente dei giocatori: {[player.name for player in self.players]}")
+
         try:
             player_index = next(i for i, p in enumerate(self.players) if p.name == 'player')
             player_hand = self.format_hand(self.players[player_index].cards)
         except StopIteration:
+            print("Nessun giocatore con il nome 'player' trovato. Verifica se la lista self.players è popolata correttamente.")
             player_hand = []  # Gestisce il caso in cui non esista un giocatore con il nome 'player'
 
         dealer_hand = self.format_hand(self.dealer.cards) if self.phase == Game.SHOWDOWN else [{'value': 'back', 'suit': 'card_back'}] * 2
@@ -356,17 +375,11 @@ class Game:
                 f"{self.players[1].name} posts big blind: {self.big_blind} chips"
             ]
 
-        players_info = [
-            {
-                'name': player.name,
-                'chips': player.chips,
-                'aggressiveness': getattr(player, 'aggressiveness', None)
-            } for player in self.players
-        ]
+        players_info = [player.to_dict() for player in self.players]
 
         bot_actions = self.get_bot_actions()  # Assicurati di avere una funzione che raccoglie le azioni dei bot
 
-        return {
+        response = {
             'player_hand': player_hand,
             'dealer_hand': dealer_hand,
             'community_cards': community_cards,
@@ -380,8 +393,13 @@ class Game:
             'pot': self.pot,
             'current_bet': self.current_bet,
             'players': players_info,
+            'dealer_index': self.turn_manager.find_big_blind(),  # Aggiungi questa riga
             'bot_actions': bot_actions
         }
+
+        # Debug: stampa lo stato del gioco generato
+        print(f"Stato del gioco generato: {response}")
+        return response
 
     def format_hand(self, cards):
         return [{'value': card.value, 'suit': card.suit} for card in cards]

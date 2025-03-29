@@ -16,48 +16,9 @@ from python_files.game import Game, BettingRound, Bot
 app = Flask(__name__, static_url_path="/static")
 game = None
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
-    if request.method == "GET":
-        return render_template("game.html")
-    elif request.method == "POST":
-        try:
-            action = request.form.get("action")
-            bet_amount = int(request.form.get("betAmount", 0))
-            response = handle_post_request(action, bet_amount)
-            return jsonify(response)
-        except Exception as e:
-            logger.error(f"Error handling post request: {e}")
-            return jsonify({'error': str(e)}), 500
-
-def handle_post_request(action, bet_amount):
-    global game
-    logger.info(f"Handling action: {action}, bet amount: {bet_amount}")
-    if action in ['check', 'call', 'bet', 'raise', 'fold']:
-        current_player = game.turn_manager.get_current_player()
-        logger.info(f"Current player: {current_player.name} ({type(current_player).__name__})")
-        message = game.execute_turn(current_player, action, bet_amount)
-        logger.info(f"Result of action: {message}")
-
-        # Esegui le azioni dei bot solo se non c'è un ciclo infinito
-        max_bot_actions = 10  # Numero massimo di azioni consecutive dei bot
-        bot_actions = 0
-
-        while isinstance(current_player, Bot) and bot_actions < max_bot_actions:
-            logger.info(f"Executing bot turn for player: {current_player.name}")
-            game.execute_phase()
-            current_player = game.turn_manager.get_current_player()
-            bot_actions += 1
-
-    # Avanzare la fase se necessario
-    if game.check_phase_end():
-        game.next_phase()
-
-    response = game.generate_game_state_response()
-    response['message'] = message
-    logger.info(f"Response data: {response}")
-    game.update_client_state()  # Assicuriamoci di inviare lo stato aggiornato al client
-    return response
+    return render_template("game.html")
 
 @app.route("/new-game", methods=["POST"])
 def new_game():
@@ -65,22 +26,21 @@ def new_game():
     game = Game()
     game.setup_players()
     response = game.generate_game_state_response()
+    logger.info("Nuovo gioco creato con successo!")
     return jsonify(response)
 
 @app.route("/start-game", methods=["POST"])
 def start_game():
     global game
     try:
-        logger.info("Starting a new game...")
+        logger.info("Avvio di una nuova partita...")
         game = Game()
         game.setup_players()
         response = game.generate_game_state_response()
-        logger.info("Game setup completed successfully: %s", response)  # Aggiungi un log per il debug
-        game.update_client_state()  # Invia lo stato aggiornato al client
-        return jsonify(response)
+        logger.info("Partita avviata con successo.")
+        return jsonify(response), 200  # Assicurati di restituire un codice 200
     except Exception as e:
-        logger.error(f"Errore durante l'avvio del gioco: {e}")
-        logger.error(e, exc_info=True)  # Aggiungi questo per ottenere lo stack trace completo
+        logger.error(f"Errore durante l'avvio della partita: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route("/advance-turn", methods=["POST"])
@@ -89,91 +49,72 @@ def advance_turn():
     logger.info("Chiamata dell'endpoint advance-turn")
     try:
         current_player = game.turn_manager.get_current_player()
-        logger.info(f"Current turn for player: {current_player.name}")
+        logger.info(f"Turno attuale: {current_player.name}")
         game.turn_manager.next_turn()
         
         if game.check_phase_end():
             game.next_phase()
         
         response = game.generate_game_state_response()
-        logger.info(f"Advance turn response: {response}")
+        logger.info("Turno avanzato correttamente")
         return jsonify(response)
     except Exception as e:
         logger.error(f"Errore durante l'avanzamento del turno: {e}")
         return jsonify({'error': str(e)}), 500
 
-@app.route("/action", methods=["POST"])
-def handle_action():
-    global game
-    logger.info("Handling action request")
-    action = request.form.get("action")
-    bet_amount = int(request.form.get("betAmount", 0))
-    try:
-        current_player = game.turn_manager.get_current_player()
-        message = game.execute_turn(current_player, action, bet_amount)
-        response = game.generate_game_state_response()
-        response['message'] = message
-        logger.info(f"Action response: {response}")
-        return jsonify(response)
-    except Exception as e:
-        logger.error(f"Errore durante l'esecuzione dell'azione: {e}")
-        return jsonify({'error': str(e)}), 500
-
-@app.route('/execute-bot-turn', methods=['POST'])
-def execute_bot_turn():
-    try:
-        # Log per il debugging
-        print("Executing bot turn")
-        
-        # Recupera l'ID del bot dal payload della richiesta
-        bot_id = request.json.get('bot_id')
-        print(f"Bot ID: {bot_id}")
-        
-        # Assicurati che il bot_id sia presente
-        if bot_id is None:
-            raise ValueError("Bot ID is missing")
-        
-        # Recupera il bot corretto
-        bot = next((player for player in game.players if player.id == bot_id), None)
-        if bot is None:
-            raise ValueError("Bot not found")
-        print(f"Bot trovato: {bot}")
-
-        # Recupera lo stato del gioco
-        game_state = {
-            'community_cards': game.community_cards,
-            'current_bet': game.current_bet,
-            'pot': game.pot,
-            'players': game.players,
-            'dealer_index': game.dealer_index
-        }
-        print(f"Game State: {game_state}")
-
-        # Assicurati che game_state contenga tutti i campi necessari
-        if not all(key in game_state for key in ['community_cards', 'current_bet', 'pot', 'players', 'dealer_index']):
-            raise ValueError("Incomplete game state")
-
-        decision, bet_amount = bot.make_decision(game_state, BettingRound.PRE_FLOP)
-        print(f"Decision: {decision}, Bet Amount: {bet_amount}")
-        
-        response = {
-            'decision': decision,
-            'bet_amount': bet_amount
-        }
-        print(f"Response: {response}")
-        return jsonify(response), 200
-    except Exception as e:
-        print(f"Error occurred: {e}")  # Log dell'errore
-        return jsonify({'error': str(e)}), 500
-    
 @app.route("/update-state", methods=["POST"])
 def update_state():
     global game
     try:
         data = request.get_json()
-        return jsonify(data)
+        logger.info(f"Aggiornamento dello stato ricevuto: {data}")
+        return jsonify({'message': 'Stato aggiornato con successo', 'data': data})
     except Exception as e:
-        logger.error(f"Errore nell'aggiornare lo stato del gioco: {e}")
+        logger.error(f"Errore nell'aggiornamento dello stato: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route("/action", methods=["POST"])
+def handle_action():
+    global game
+    try:
+        action = request.json.get("action")
+        bet_amount = int(request.json.get("betAmount", 0))
+        logger.info(f"Gestione dell'azione: {action}, Importo: {bet_amount}")
+
+        current_player = game.turn_manager.get_current_player()
+        message = game.execute_turn(current_player, action, bet_amount)
+        response = game.generate_game_state_response()
+        response['message'] = message
+
+        logger.info(f"Azione gestita con successo: {response}")
+        return jsonify(response)
+    except Exception as e:
+        logger.error(f"Errore durante la gestione dell'azione: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route("/execute-bot-turn", methods=["POST"])
+def execute_bot_turn():
+    global game
+    try:
+        logger.info("Esecuzione del turno del bot.")
+        bot_id = request.json.get('bot_id')
+        
+        bot = next((player for player in game.players if player.id == bot_id), None)
+        if not bot:
+            raise ValueError(f"Bot con ID {bot_id} non trovato.")
+        
+        logger.info(f"Bot trovato: {bot.name}")
+        game_state = game.generate_game_state_response()
+        decision, bet_amount = bot.make_decision(game_state, BettingRound.PRE_FLOP)
+
+        response = {
+            'decision': decision,
+            'bet_amount': bet_amount
+        }
+        logger.info(f"Risultato del turno bot: {response}")
+        return jsonify(response), 200
+    except Exception as e:
+        logger.error(f"Errore durante il turno del bot: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route("/home_poker", methods=["GET"])
@@ -185,13 +126,14 @@ def poker_rules():
     return render_template("poker_rules.html")
 
 def clean_up():
-    logger.info("Cleaning up before shutdown...")
-    # Esegui eventuali operazioni di chiusura necessarie
+    logger.info("Pulizia prima della chiusura dell'applicazione.")
+    # Operazioni di chiusura eventuali
 
-# Registra la funzione clean_up per essere chiamata alla chiusura dell'app
+# Registra la funzione clean_up per l'arresto dell'applicazione
 atexit.register(clean_up)
 
 if __name__ == "__main__":
+    logger.info("Avvio del server Flask...")
     app.run(debug=True, port=5001)
 
 #TODO:

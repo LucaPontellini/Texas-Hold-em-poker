@@ -16,12 +16,12 @@
             <button id="startGame" class="button hidden" type="button" onclick="startGame()">Start Game</button>
             <button id="exit" class="button" type="button" onclick="exitGame()">Exit</button>
             <div id="gameButtons" class="hidden">
-                <button id="check" class="button" type="button" data-tooltip="Check: Pass the turn without betting." onclick="executeAction('check')">Check</button>
-                <button id="bet" class="button" type="button" data-tooltip="Bet: Wager a certain amount of chips." onclick="toggleBetMenu()">Bet</button>
-                <button id="call" class="button" type="button" data-tooltip="Call: Match another player's bet." onclick="executeAction('call')">Call</button>
-                <button id="raise" class="button" type="button" data-tooltip="Raise: Increase the bet." onclick="executeAction('raise')">Raise</button>
-                <button id="fold" class="button" type="button" data-tooltip="Fold: Abandon the hand." onclick="executeAction('fold')">Fold</button>
-            </div>
+                <button id="check" class="button" type="button" aria-label="Esegui il comando Check" data-tooltip="Check: Pass the turn without betting." onclick="executeAction('check')">Check</button>
+                <button id="bet" class="button" type="button" aria-label="Esegui il comando Bet" data-tooltip="Bet: Wager a certain amount of chips." onclick="toggleBetMenu()">Bet</button>
+                <button id="call" class="button" type="button" aria-label="Esegui il comando Call" data-tooltip="Call: Match another player's bet." onclick="executeAction('call')">Call</button>
+                <button id="raise" class="button" type="button" aria-label="Esegui il comando Raise" data-tooltip="Raise: Increase the bet." onclick="executeAction('raise')">Raise</button>
+                <button id="fold" class="button" type="button" aria-label="Esegui il comando Fold" data-tooltip="Fold: Abandon the hand." onclick="executeAction('fold')">Fold</button>
+            </div>            
             <div class="slidecontainer hidden" id="betMenu">
                 <label for="betRange" class="sr-only">Adjust Bet Amount</label>
                 <input type="range" min="1" value="50" class="slider" id="betRange" oninput="updateBetValue()" title="Adjust Bet Amount">
@@ -104,6 +104,7 @@
             </div>
             <div id="blinds-info" class="info"></div>           
             <div id="turn-info" class="info"></div>
+            <div id="currentTurn" class="info"></div>
         </div>        
         <div id="community-cards" class="hand"></div>
         <div id="player-hand" class="hand"></div>
