@@ -181,5 +181,5 @@ if __name__ == "__main__":
 #per attivare il venv:
 #- andare sopra alla cartella del progetto
 #- aprire un nuovo reminale
-#- digitare il comando --> F:\Texas-Hold-em-poker\venv\Scripts\Activate.ps1
+#- digitare il comando --> Texas-Hold-em-poker\proprio_venv\Scripts\Activate.ps1 per Windows PowerShell sennò digitare --> source Texas-Hold-em-poker/proprio_venv/bin/activate per Linux o MacOS
 #- se si vuole avviare il progetto --> python texas_hold_em_poker.py

@@ -7,12 +7,12 @@ pygame.mixer.init()
 
 # Lista dei file musicali
 playlist = [
-    'E:Texas-Hold-em-poker/static/music/best_jazz_club_NO.mp3',
-    'E:Texas-Hold-em-poker/static/music/casino.mp3',
-    'E:Texas-Hold-em-poker/static/music/jazz_casino_bar.mp3',
-    'E:Texas-Hold-em-poker/static/music/jazz_whiskey_casino.mp3',
-    'E:Texas-Hold-em-poker/static/music/two_cigarettes_please.mp3',
-    'E:Texas-Hold-em-poker/static/music/welcome_to_new_orleans.mp3'
+    '../Texas-Hold-em-poker/static/music/best_jazz_club_NO.mp3',
+    '../Texas-Hold-em-poker/static/music/casino.mp3',
+    '../Texas-Hold-em-poker/static/music/jazz_casino_bar.mp3',
+    '../Texas-Hold-em-poker/static/music/jazz_whiskey_casino.mp3',
+    '../Texas-Hold-em-poker/static/music/two_cigarettes_please.mp3',
+    '../Texas-Hold-em-poker/static/music/welcome_to_new_orleans.mp3'
 ]
 
 # Verifica che i file esistano
