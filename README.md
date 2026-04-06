@@ -50,3 +50,7 @@ The Texas Hold'em Poker project is an update to these systems, representing vers
 2. Open your web browser and navigate to [http://localhost:5000](http://localhost:5000) to access the application.
 
 You can find all the details in the [Texas_Hold_em_Poker.md](https://github.com/LucaPontellini/Texas-Hold-em-poker/blob/f516d1ad86ca0908305878f894d34686a6365564/Texas_Hold_em_poker.md) file.
+
+## 📁 Project structure
+
+For a complete and up‑to‑date overview of the project architecture, you can consult the dedicated document: [PROJECT_STRUCTURE.md](https://github.com/LucaPontellini/Texas-Hold-em-poker/blob/ec7e66efe82069a841c956cef0f99f577143111c/PROJECT_STRUCTURE.md)
